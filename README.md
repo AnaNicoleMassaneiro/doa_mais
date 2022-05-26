@@ -8,7 +8,6 @@ Aplicativo para doadores de sangue
 <img src="./assets/agenda1.png" alt="J" width="100"/>
 <img src="./assets/agenda2.png" alt="J" width="100"/>
 <img src="./assets/carteririnha.png" alt="J" width="100"/>
-<img src="./assets/login.png" alt="J" width="100"/>
 <img src="./assets/perfil.png" alt="J" width="100"/>
 <img src="./assets/perfilEDIT.png" alt="J" width="100"/>
 </p>
