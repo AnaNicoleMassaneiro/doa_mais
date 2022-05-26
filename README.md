@@ -2,6 +2,7 @@
 Aplicativo para doadores de sangue
 
 ## Veja como o aplicativo vai ficar
+<p float="left">
 <img src="./assets/login.png" alt="J" width="150"/>
 <img src="./assets/cadastro.png" alt="J" width="150"/>
 <img src="./assets/agenda1.png" alt="J" width="150"/>
@@ -10,6 +11,7 @@ Aplicativo para doadores de sangue
 <img src="./assets/login.png" alt="J" width="150"/>
 <img src="./assets/perfil.png" alt="J" width="150"/>
 <img src="./assets/perfilEDIT.png" alt="J" width="150"/>
+</p>
 
 
 ### Voce é um doador de sangue?
