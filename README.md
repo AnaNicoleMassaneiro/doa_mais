@@ -3,13 +3,13 @@ Aplicativo para doadores de sangue
 
 ## Veja como o aplicativo vai ficar
 <img src="./assets/login.png" alt="J" width="200"/>
-<img src="./assets/cadastro" alt="J" width="200"/>
-<img src="./assets/agenda1" alt="J" width="200"/>
-<img src="./assets/agenda2" alt="J" width="200"/>
-<img src="./assets/carteirinha" alt="J" width="200"/>
-<img src="./assets/login" alt="J" width="200"/>
-<img src="./assets/perfil" alt="J" width="200"/>
-<img src="./assets/perfilEDIT" alt="J" width="200"/>
+<img src="./assets/cadastro.png" alt="J" width="200"/>
+<img src="./assets/agenda1.png" alt="J" width="200"/>
+<img src="./assets/agenda2.png" alt="J" width="200"/>
+<img src="./assets/carteirinha.png" alt="J" width="200"/>
+<img src="./assets/login.png" alt="J" width="200"/>
+<img src="./assets/perfil.png" alt="J" width="200"/>
+<img src="./assets/perfilEDIT.png" alt="J" width="200"/>
 
 
 ### Voce é um doador de sangue?
