@@ -3,6 +3,8 @@ Aplicativo para doadores de sangue
 
 ## Veja como o aplicativo vai ficar
 ![My animated logo](./assets/login.png)
+![Alt text](./assets/login.pn?raw=true "Title")
+![plot](./assets/login.png)
 
 <img src="../assets/login" width="128"/>
 <img src="./assets/cadastro" width="128"/>
