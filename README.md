@@ -2,15 +2,14 @@
 Aplicativo para doadores de sangue
 
 ## Veja como o aplicativo vai ficar
-![My animated logo](./assets/login.png)
 <img src="./assets/login.png" alt="J" width="200"/>
-<img src="./assets/cadastro" width="128"/>
-<img src="assets/agenda1" width="128"/>
-<img src="assets/agenda2" width="128"/>
-<img src="assets/carteirinha" width="128"/>
-<img src="assets/login" width="128"/>
-<img src="assets/perfil" width="128"/>
-<img src="assets/perfilEDIT" width="128"/>
+<img src="./assets/cadastro" alt="J" width="200"/>
+<img src="./assets/agenda1" alt="J" width="200"/>
+<img src="./assets/agenda2" alt="J" width="200"/>
+<img src="./assets/carteirinha" alt="J" width="200"/>
+<img src="./assets/login" alt="J" width="200"/>
+<img src="./assets/perfil" alt="J" width="200"/>
+<img src="./assets/perfilEDIT" alt="J" width="200"/>
 
 
 ### Voce é um doador de sangue?
