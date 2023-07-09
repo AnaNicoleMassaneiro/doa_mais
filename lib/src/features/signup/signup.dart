@@ -1,7 +1,10 @@
+import 'package:doa_mais/src/features/signup/service/users.dart';
 import 'package:flutter/material.dart';
 
 import '../../Widget/bezierContainer.dart';
+import '../../shared/components/CustomDialog.dart';
 import '../../shared/components/SubmitButton.dart';
+import '../login/loginPage.dart';
 import 'components/CreateAccountLabel.dart';
 import 'components/EmailPasswordWidget.dart';
 import 'components/SignUpTitle.dart';
@@ -23,6 +26,7 @@ class _SignUpPageState extends State<SignUpPage> {
     TextEditingController emailController = TextEditingController();
 
     bool isLoading = false;
+    final UserRepository userRepository = UserRepository();
 
     bool _validateFields() {
         bool isValid = true;
@@ -84,7 +88,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 isLoading = false;
             });
 
-            // Show error dialog
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -105,29 +108,34 @@ class _SignUpPageState extends State<SignUpPage> {
 
             confirmPasswordController.clear();
             return;
-        }
-
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-                return AlertDialog(
-                    title: Text('Success'),
-                    content: Text('Doador registado com sucesso.'),
-                    actions: [
-                        TextButton(
+        } else {
+            userRepository.registerUser(name, cpf, password, email).then((result) {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                        return CustomDialog(
+                            title: result ? 'Sucesso' : 'Erro',
+                            content: result ? 'Usuário registrado com sucesso.' : 'Erro ao registrar usuário.',
                             onPressed: () {
                                 Navigator.of(context).pop();
+                                if (result) {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => LoginPage()),
+                                    );
+                                }
                             },
-                            child: Text('OK'),
-                        ),
-                    ],
+                        );
+                    },
                 );
-            },
-        );
 
-        setState(() {
-            isLoading = false;
-        });
+                setState(() {
+                    isLoading = false;
+                });
+            });
+        }
+
+
     }
 
     @override

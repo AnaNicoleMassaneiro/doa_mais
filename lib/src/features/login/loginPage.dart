@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:doa_mais/src/features/signup/signup.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../Widget/bezierContainer.dart';
 
@@ -132,7 +131,11 @@ class _LoginPageState extends State<LoginPage> {
           children: <Widget>[
             Text(
               'Cadastre-se aqui',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.red, // Altere a cor do texto para vermelho
+              ),
             ),
             SizedBox(
               width: 10,
@@ -140,15 +143,17 @@ class _LoginPageState extends State<LoginPage> {
             Text(
               'Cadastro',
               style: TextStyle(
-                  color: Color(0xffe24646),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600),
+                color: Color(0xffe24646),
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
 
   Widget _title() {
     return RichText(

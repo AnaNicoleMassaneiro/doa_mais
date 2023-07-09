@@ -1,5 +1,62 @@
 # DOA+
-Aplicativo para doadores de sangue
+
+Projeto realizado como TCC da especialização em Engenharia de Software
+
+## Pré-requisitos
+
+Antes de começar, certifique-se de ter os seguintes requisitos instalados em seu ambiente de desenvolvimento:
+
+- Flutter SDK
+- Dart SDK
+- Emulador ou dispositivo físico para executar o aplicativo
+
+## Instalação
+
+1. Faça um clone deste repositório em sua máquina local:
+
+```
+git clone https://github.com/AnaNicoleMassaneiro/doa_mais
+```
+
+2. Navegue até o diretório do projeto:
+
+```
+cd doa_mais
+```
+
+3. Instale as dependências do projeto:
+
+```
+flutter pub get
+```
+
+## Executando o Projeto
+
+Certifique-se de ter um emulador Android ou iOS em execução ou um dispositivo físico conectado.
+
+Execute o seguinte comando para iniciar o aplicativo:
+
+```
+flutter run
+```
+
+Isso iniciará o aplicativo no emulador ou dispositivo conectado.
+
+## Estrutura do Projeto
+
+- `lib/` - Contém o código-fonte do aplicativo Flutter.
+- `assets/` - Contém os recursos do aplicativo, como imagens e arquivos de fonte.
+- `test/` - Contém os testes do aplicativo.
+
+## Licença
+
+Este projeto está licenciado sob a [MIT License](https://opensource.org/licenses/MIT).
+
+## Contato
+
+Se você tiver alguma dúvida ou sugestão relacionada a este projeto, entre em contato comigo em [ana.nicol02@gmail.com](mailto:ana.nicol02@gmail.com).
+
+---
 
 ## Veja como o aplicativo vai ficar
 <p float="left">
