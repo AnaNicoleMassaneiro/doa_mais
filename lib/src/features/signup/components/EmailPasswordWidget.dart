@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../shared/components/InputField.dart';
 import '../validators/CpfValidator.dart';
+import 'CpfInputFormatter.dart';
 
 class EmailPasswordWidget extends StatelessWidget {
   final TextEditingController nameController;
@@ -26,30 +27,32 @@ class EmailPasswordWidget extends StatelessWidget {
           controller: nameController,
           isRequired: true,
         ),
-        SizedBox(height: 10), // Espaçamento entre o primeiro e o segundo InputField
+        SizedBox(height: 10),
         InputField(
           title: 'CPF',
           controller: cpfController,
           keyboardType: TextInputType.number,
           inputFormatters: [
-            CpfValidator(maxLength: 11),
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(11),
+            CpfInputFormatter(),
           ],
           isRequired: true,
         ),
-        SizedBox(height: 10), // Espaçamento entre o segundo e o terceiro InputField
+        SizedBox(height: 10),
         InputField(
           title: 'Email',
           controller: emailController,
           isRequired: true,
         ),
-        SizedBox(height: 10), // Espaçamento entre o terceiro e o quarto InputField
+        SizedBox(height: 10),
         InputField(
           title: 'Senha',
           controller: passwordController,
           isPassword: true,
           isRequired: true,
         ),
-        SizedBox(height: 10), // Espaçamento entre o quarto e o quinto InputField
+        SizedBox(height: 10),
         InputField(
           title: 'Confirmação de Senha',
           controller: confirmPasswordController,
@@ -58,7 +61,8 @@ class EmailPasswordWidget extends StatelessWidget {
         ),
       ],
     );
-}
+  }
+
 
   @override
   Widget build(BuildContext context) {

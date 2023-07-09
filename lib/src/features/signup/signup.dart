@@ -27,7 +27,6 @@ class _SignUpPageState extends State<SignUpPage> {
     bool _validateFields() {
         bool isValid = true;
 
-        // Verifies each required field and highlights empty fields
         if (nameController.text.isEmpty) {
             setState(() {
                 isValid = false;
@@ -90,8 +89,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 context: context,
                 builder: (BuildContext context) {
                     return AlertDialog(
-                        title: Text('Error'),
-                        content: Text('Passwords do not match.'),
+                        title: Text('Erro'),
+                        content: Text('As senhas não coincidem.'),
                         actions: [
                             TextButton(
                                 onPressed: () {
@@ -108,16 +107,12 @@ class _SignUpPageState extends State<SignUpPage> {
             return;
         }
 
-        // Perform user registration
-        // ...
-
-        // Show success dialog
         showDialog(
             context: context,
             builder: (BuildContext context) {
                 return AlertDialog(
                     title: Text('Success'),
-                    content: Text('User registered successfully.'),
+                    content: Text('Doador registado com sucesso.'),
                     actions: [
                         TextButton(
                             onPressed: () {
@@ -172,7 +167,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                             padding: EdgeInsets.symmetric(vertical: 10),
                                             alignment: Alignment.centerRight,
                                             child: Text(
-                                                'Forgot password?',
+                                                'Esqueceu sua senha?',
                                                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                                             ),
                                         ),
