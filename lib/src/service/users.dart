@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-Future<void> registerUser(String name, String cpf, String password, String email) async {
+Future<bool> registerUser(String name, String cpf, String password, String email) async {
   final url = 'http://localhost:8080/users';
 
   final body = jsonEncode({
@@ -18,9 +18,11 @@ Future<void> registerUser(String name, String cpf, String password, String email
   );
 
   if (response.statusCode == 200) {
-    print('Usuário registrado com sucesso');
+    return true;
   } else {
+
     print('Erro ao registrar usuário. Código de status: ${response.statusCode}');
     print('Mensagem de erro: ${response.body}');
+    return false;
   }
 }

@@ -1,11 +1,11 @@
-import 'package:doa_mais/src/service/users.dart';
 import 'package:flutter/material.dart';
+import 'package:doa_mais/src/service/users.dart';
 import 'package:doa_mais/src/Widget/bezierContainer.dart';
 import 'package:doa_mais/src/loginPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SignUpPage extends StatefulWidget {
-  SignUpPage({Key ?key, this.title}) : super(key: key);
+  SignUpPage({Key? key, this.title}) : super(key: key);
 
   final String? title;
 
@@ -17,7 +17,11 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController cpfController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+
+
+  bool isLoading = false;
 
   Widget _backButton() {
     return InkWell(
@@ -33,7 +37,7 @@ class _SignUpPageState extends State<SignUpPage> {
               child: Icon(Icons.keyboard_arrow_left, color: Colors.black),
             ),
             Text('Voltar',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500))
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
           ],
         ),
       ),
@@ -54,11 +58,14 @@ class _SignUpPageState extends State<SignUpPage> {
             height: 10,
           ),
           TextField(
-              obscureText: isPassword,
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  fillColor: Color(0xfff3f3f4),
-                  filled: true))
+            controller: isPassword ? passwordController : null,
+            obscureText: isPassword,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              fillColor: Color(0xfff3f3f4),
+              filled: true,
+            ),
+          ),
         ],
       ),
     );
@@ -77,7 +84,7 @@ class _SignUpPageState extends State<SignUpPage> {
             offset: Offset(2, 4),
             blurRadius: 5,
             spreadRadius: 2,
-          )
+          ),
         ],
         gradient: const LinearGradient(
           begin: Alignment.centerLeft,
@@ -86,9 +93,7 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       ),
       child: ElevatedButton(
-        onPressed: () {
-          _submitForm();
-        },
+        onPressed: isLoading ? null : _submitForm,
         child: Text(
           'Cadastre-se agora',
           style: TextStyle(fontSize: 20, color: Colors.white),
@@ -97,21 +102,70 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  void _submitForm() {
-    registerUser(
-      nameController.text,
-      cpfController.text,
-      passwordController.text,
-      emailController.text,
+  void _showDialog(bool success) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(success ? 'Sucesso' : 'Erro'),
+          content: Text(
+            success ? 'Usuário registrado com sucesso.' : 'Erro ao registrar usuário.',
+          ),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+
+              },
+            ),
+          ],
+        );
+      },
     );
   }
+
+
+  void _submitForm() {
+    setState(() {
+      isLoading = true;
+    });
+
+    final String name = nameController.text;
+    final String cpf = cpfController.text;
+    final String email = emailController.text;
+    final String password = passwordController.text;
+    final String confirmPassword = confirmPasswordController.text;
+
+    if (password != confirmPassword) {
+      setState(() {
+        isLoading = false;
+      });
+
+      _showDialog(false);
+
+      confirmPasswordController.clear();
+      return;
+    }
+
+    registerUser(name, cpf, password, email).then((result) {
+      setState(() {
+        isLoading = false;
+      });
+
+      _showDialog(result);
+    });
+  }
+
 
 
   Widget _loginAccountLabel() {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LoginPage()));
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20),
@@ -144,12 +198,13 @@ class _SignUpPageState extends State<SignUpPage> {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-          text: 'DOA+',
-          style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w700,
-              color: Color(0xffe24646)
-          ),),
+        text: 'DOA+',
+        style: TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.w700,
+          color: Color(0xffe24646),
+        ),
+      ),
     );
   }
 
@@ -158,10 +213,13 @@ class _SignUpPageState extends State<SignUpPage> {
       children: <Widget>[
         _entryField("Nome"),
         _entryField("CPF"),
+        _entryField("Email"),
         _entryField("Senha", isPassword: true),
+        _entryField("Confirmação de Senha", isPassword: true),
       ],
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
