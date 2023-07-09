@@ -1,3 +1,4 @@
+import 'package:doa_mais/src/service/users.dart';
 import 'package:flutter/material.dart';
 import 'package:doa_mais/src/Widget/bezierContainer.dart';
 import 'package:doa_mais/src/loginPage.dart';
@@ -13,6 +14,11 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController cpfController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -64,24 +70,42 @@ class _SignUpPageState extends State<SignUpPage> {
       padding: EdgeInsets.symmetric(vertical: 15),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.grey.shade200,
-                offset: Offset(2, 4),
-                blurRadius: 5,
-                spreadRadius: 2)
-          ],
-          gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [Color(0xffe24646), Color(0xffe24646)])),
-      child: Text(
-        'Cadastre-se agora',
-        style: TextStyle(fontSize: 20, color: Colors.white),
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.grey.shade200,
+            offset: Offset(2, 4),
+            blurRadius: 5,
+            spreadRadius: 2,
+          )
+        ],
+        gradient: const LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [Color(0xffe24646), Color(0xffe24646)],
+        ),
+      ),
+      child: ElevatedButton(
+        onPressed: () {
+          _submitForm();
+        },
+        child: Text(
+          'Cadastre-se agora',
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
       ),
     );
   }
+
+  void _submitForm() {
+    registerUser(
+      nameController.text,
+      cpfController.text,
+      passwordController.text,
+      emailController.text,
+    );
+  }
+
 
   Widget _loginAccountLabel() {
     return InkWell(

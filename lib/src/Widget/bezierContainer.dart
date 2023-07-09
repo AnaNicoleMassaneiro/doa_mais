@@ -17,7 +17,7 @@ class BezierContainer extends StatelessWidget {
         child: Container(
           height: MediaQuery.of(context).size.height *.5,
           width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
