@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:doa_mais/src/loginPage.dart';
-import 'package:doa_mais/src/signup.dart';
+import 'package:doa_mais/src/features/login/loginPage.dart';
+import 'package:doa_mais/src/features/signup/signup.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class WelcomePage extends StatefulWidget {

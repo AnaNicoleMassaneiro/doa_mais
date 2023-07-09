@@ -1,7 +1,6 @@
+import 'package:doa_mais/src/features/welcome/welcomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import 'src/welcomePage.dart';
 
 void main() => runApp(MyApp());
 

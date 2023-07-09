@@ -1,13 +1,12 @@
 import 'package:flutter/services.dart';
 
-class CpfFormatter extends TextInputFormatter {
-  static const int cpfLength = 11;
+class CpfValidator extends TextInputFormatter {
+  final int maxLength;
+
+  CpfValidator({this.maxLength = 11});
 
   @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue,
-      TextEditingValue newValue,
-      ) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     String maskedText = '';
     String text = newValue.text;
     int selectionIndex = newValue.selection.end;

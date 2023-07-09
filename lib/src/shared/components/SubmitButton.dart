@@ -13,7 +13,7 @@ class SubmitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(vertical: 15),
+      padding: const EdgeInsets.symmetric(vertical: 15),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(5)),
@@ -33,7 +33,7 @@ class SubmitButton extends StatelessWidget {
       ),
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
-        child: Text(
+        child: const Text(
           'Cadastre-se agora',
           style: TextStyle(fontSize: 20, color: Colors.white),
         ),

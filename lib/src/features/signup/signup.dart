@@ -1,13 +1,13 @@
-import 'package:doa_mais/src/validators/CpfValidator.dart';
+import 'package:doa_mais/src/features/signup/validators/CpfValidator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'Widget/bezierContainer.dart';
-import 'components/CustomDialog.dart';
-import 'components/InputField.dart';
-import 'components/SubmitButton.dart';
-import 'loginPage.dart';
-import 'service/users.dart';
+import '../../Widget/bezierContainer.dart';
+import '../../shared/components/CustomDialog.dart';
+import '../../shared/components/InputField.dart';
+import '../../shared/components/SubmitButton.dart';
+import '../login/loginPage.dart';
+import '../../service/users.dart';
 
 class SignUpPage extends StatefulWidget {
   SignUpPage({Key? key, this.title}) : super(key: key);
@@ -50,9 +50,12 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _submitButton() {
-    return SubmitButton(
-      onPressed: isLoading ? null : _submitForm,
-      isLoading: isLoading,
+    return GestureDetector(
+      onTap: isLoading ? null : _submitForm,
+      child: SubmitButton(
+        onPressed: null,
+        isLoading: isLoading,
+      ),
     );
   }
 
@@ -75,6 +78,13 @@ class _SignUpPageState extends State<SignUpPage> {
     setState(() {
       isLoading = true;
     });
+
+    if (!_validateFields()) {
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
 
     final String name = nameController.text;
     final String cpf = cpfController.text;
@@ -101,6 +111,45 @@ class _SignUpPageState extends State<SignUpPage> {
       _showDialog(result);
     });
   }
+
+  bool _validateFields() {
+    bool isValid = true;
+
+    // Verifique cada campo obrigatório e destaque os campos não preenchidos
+    if (nameController.text.isEmpty) {
+      setState(() {
+        isValid = false;
+        nameController.clear();
+      });
+    }
+    if (cpfController.text.isEmpty) {
+      setState(() {
+        isValid = false;
+        cpfController.clear();
+      });
+    }
+    if (emailController.text.isEmpty) {
+      setState(() {
+        isValid = false;
+        emailController.clear();
+      });
+    }
+    if (passwordController.text.isEmpty) {
+      setState(() {
+        isValid = false;
+        passwordController.clear();
+      });
+    }
+    if (confirmPasswordController.text.isEmpty) {
+      setState(() {
+        isValid = false;
+        confirmPasswordController.clear();
+      });
+    }
+
+    return isValid;
+  }
+
 
   Widget _loginAccountLabel() {
     return InkWell(
@@ -155,75 +204,147 @@ class _SignUpPageState extends State<SignUpPage> {
         InputField(
           title: 'Nome',
           controller: nameController,
+          isRequired: true,
         ),
         InputField(
           title: 'CPF',
           controller: cpfController,
           keyboardType: TextInputType.number,
           inputFormatters: [
-            LengthLimitingTextInputFormatter(11),
-            FilteringTextInputFormatter.digitsOnly,
-            CpfFormatter(),
+            CpfValidator(maxLength: 9),
           ],
+          isRequired: true,
         ),
         InputField(
           title: 'Email',
           controller: emailController,
+          isRequired: true,
         ),
         InputField(
           title: 'Senha',
           controller: passwordController,
           isPassword: true,
+          isRequired: true,
         ),
         InputField(
           title: 'Confirmação de Senha',
           controller: confirmPasswordController,
           isPassword: true,
+          isRequired: true,
         ),
       ],
     );
   }
 
+  Widget _divider() {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: <Widget>[
+          SizedBox(
+            width: 20,
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: Divider(
+                thickness: 1,
+              ),
+            ),
+          ),
+          Text('or'),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: Divider(
+                thickness: 1,
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _createAccountLabel() {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => SignUpPage()));
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 20),
+        padding: EdgeInsets.all(15),
+        alignment: Alignment.bottomCenter,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Cadastre-se aqui',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              'Cadastro',
+              style: TextStyle(
+                  color: Color(0xffe24646),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          height: height,
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                top: -MediaQuery.of(context).size.height * .15,
+      body: Container(
+        height: height,
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+                top: -height * .15,
                 right: -MediaQuery.of(context).size.width * .4,
-                child: BezierContainer(),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: BezierContainer()),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(height: height * .2),
                     _title(),
-                    SizedBox(
-                      height: 50,
-                    ),
+                    SizedBox(height: 50),
                     _emailPasswordWidget(),
-                    SizedBox(
-                      height: 20,
-                    ),
+                    SizedBox(height: 20),
                     _submitButton(),
-                    SizedBox(height: height * .14),
-                    _loginAccountLabel(),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      alignment: Alignment.centerRight,
+                      child: Text('Esqueceu a senha?',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500)),
+                    ),
+                    _divider(),
+                    SizedBox(height: height * .055),
+                    _createAccountLabel(),
                   ],
                 ),
               ),
-              Positioned(top: 40, left: 0, child: _backButton()),
-            ],
-          ),
+            ),
+            Positioned(top: 40, left: 0, child: _backButton()),
+          ],
         ),
-      ),
-    );
+        ),
+      );
+
   }
 }
