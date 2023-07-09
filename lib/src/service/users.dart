@@ -1,28 +1,31 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-Future<bool> registerUser(String name, String cpf, String password, String email) async {
-  final url = 'http://localhost:8080/users';
+class UserRepository {
+  Future<bool> registerUser(
+      String name, String cpf, String password, String email) async {
+    final url = 'http://localhost:8080/users';
 
-  final body = jsonEncode({
-    'name': name,
-    'cpf': cpf,
-    'password': password,
-    'email': email,
-  });
+    final body = jsonEncode({
+      'name': name,
+      'cpf': cpf,
+      'password': password,
+      'email': email,
+    });
 
-  final response = await http.post(
-    Uri.parse(url),
-    headers: {'Content-Type': 'application/json'},
-    body: body,
-  );
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: body,
+    );
 
-  if (response.statusCode == 200) {
-    return true;
-  } else {
-
-    print('Erro ao registrar usuário. Código de status: ${response.statusCode}');
-    print('Mensagem de erro: ${response.body}');
-    return false;
+    if (response.statusCode == 200) {
+      print('Usuário registrado com sucesso');
+      return true;
+    } else {
+      print('Erro ao registrar usuário. Código de status: ${response.statusCode}');
+      print('Mensagem de erro: ${response.body}');
+      return false;
+    }
   }
 }

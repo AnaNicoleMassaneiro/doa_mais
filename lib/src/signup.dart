@@ -1,8 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:doa_mais/src/service/users.dart';
-import 'package:doa_mais/src/Widget/bezierContainer.dart';
-import 'package:doa_mais/src/loginPage.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/material.dart';
+
+import 'Widget/bezierContainer.dart';
+import 'components/CustomDialog.dart';
+import 'components/InputField.dart';
+import 'components/SubmitButton.dart';
+import 'loginPage.dart';
 
 class SignUpPage extends StatefulWidget {
   SignUpPage({Key? key, this.title}) : super(key: key);
@@ -20,8 +23,8 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
 
-
   bool isLoading = false;
+  final UserRepository userRepository = UserRepository();
 
   Widget _backButton() {
     return InkWell(
@@ -44,61 +47,10 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _entryField(String title, {bool isPassword = false}) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          TextField(
-            controller: isPassword ? passwordController : null,
-            obscureText: isPassword,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              fillColor: Color(0xfff3f3f4),
-              filled: true,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _submitButton() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(vertical: 15),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(5)),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Colors.grey.shade200,
-            offset: Offset(2, 4),
-            blurRadius: 5,
-            spreadRadius: 2,
-          ),
-        ],
-        gradient: const LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [Color(0xffe24646), Color(0xffe24646)],
-        ),
-      ),
-      child: ElevatedButton(
-        onPressed: isLoading ? null : _submitForm,
-        child: Text(
-          'Cadastre-se agora',
-          style: TextStyle(fontSize: 20, color: Colors.white),
-        ),
-      ),
+    return SubmitButton(
+      onPressed: isLoading ? null : _submitForm,
+      isLoading: isLoading,
     );
   }
 
@@ -106,25 +58,16 @@ class _SignUpPageState extends State<SignUpPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(success ? 'Sucesso' : 'Erro'),
-          content: Text(
-            success ? 'Usuário registrado com sucesso.' : 'Erro ao registrar usuário.',
-          ),
-          actions: [
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-
-              },
-            ),
-          ],
+        return CustomDialog(
+          title: success ? 'Sucesso' : 'Erro',
+          content: success ? 'Usuário registrado com sucesso.' : 'Erro ao registrar usuário.',
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         );
       },
     );
   }
-
 
   void _submitForm() {
     setState(() {
@@ -148,7 +91,7 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    registerUser(name, cpf, password, email).then((result) {
+    userRepository.registerUser(name, cpf, password, email).then((result) {
       setState(() {
         isLoading = false;
       });
@@ -157,15 +100,11 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-
-
   Widget _loginAccountLabel() {
     return InkWell(
       onTap: () {
         Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-        );
+            context, MaterialPageRoute(builder: (context) => LoginPage()));
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20),
@@ -197,29 +136,45 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
-      text: TextSpan(
+      text: const TextSpan(
         text: 'DOA+',
         style: TextStyle(
-          fontSize: 30,
-          fontWeight: FontWeight.w700,
-          color: Color(0xffe24646),
-        ),
-      ),
+            fontSize: 30,
+            fontWeight: FontWeight.w700,
+            color: Color(0xffe24646)
+        ),),
     );
   }
+
 
   Widget _emailPasswordWidget() {
     return Column(
       children: <Widget>[
-        _entryField("Nome"),
-        _entryField("CPF"),
-        _entryField("Email"),
-        _entryField("Senha", isPassword: true),
-        _entryField("Confirmação de Senha", isPassword: true),
+        InputField(
+          title: 'Nome',
+          controller: nameController,
+        ),
+        InputField(
+          title: 'CPF',
+          controller: cpfController,
+        ),
+        InputField(
+          title: 'Email',
+          controller: emailController,
+        ),
+        InputField(
+          title: 'Senha',
+          controller: passwordController,
+          isPassword: true,
+        ),
+        InputField(
+          title: 'Confirmação de Senha',
+          controller: confirmPasswordController,
+          isPassword: true,
+        ),
       ],
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
