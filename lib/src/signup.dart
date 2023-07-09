@@ -1,11 +1,13 @@
-import 'package:doa_mais/src/service/users.dart';
+import 'package:doa_mais/src/validators/CpfValidator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'Widget/bezierContainer.dart';
 import 'components/CustomDialog.dart';
 import 'components/InputField.dart';
 import 'components/SubmitButton.dart';
 import 'loginPage.dart';
+import 'service/users.dart';
 
 class SignUpPage extends StatefulWidget {
   SignUpPage({Key? key, this.title}) : super(key: key);
@@ -142,10 +144,10 @@ class _SignUpPageState extends State<SignUpPage> {
             fontSize: 30,
             fontWeight: FontWeight.w700,
             color: Color(0xffe24646)
-        ),),
+        ),
+      ),
     );
   }
-
 
   Widget _emailPasswordWidget() {
     return Column(
@@ -157,6 +159,12 @@ class _SignUpPageState extends State<SignUpPage> {
         InputField(
           title: 'CPF',
           controller: cpfController,
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(11),
+            FilteringTextInputFormatter.digitsOnly,
+            CpfFormatter(),
+          ],
         ),
         InputField(
           title: 'Email',
@@ -180,18 +188,18 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-      body: Container(
-        height: height,
-        child: Stack(
-          children: <Widget>[
-            Positioned(
-              top: -MediaQuery.of(context).size.height * .15,
-              right: -MediaQuery.of(context).size.width * .4,
-              child: BezierContainer(),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Container(
+          height: height,
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                top: -MediaQuery.of(context).size.height * .15,
+                right: -MediaQuery.of(context).size.width * .4,
+                child: BezierContainer(),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -211,9 +219,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   ],
                 ),
               ),
-            ),
-            Positioned(top: 40, left: 0, child: _backButton()),
-          ],
+              Positioned(top: 40, left: 0, child: _backButton()),
+            ],
+          ),
         ),
       ),
     );
