@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
+import '../appointments/service/LocationService.dart';
 import '../menu/MenuComponent.dart';
 import '../menu/TabBarComponent.dart';
 
@@ -12,14 +15,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   String? selectedLocation;
-
-  List<String> locations = [
-    'Location 1',
-    'Location 2',
-    'Location 3',
-    'Location 4',
-    'Location 5',
-  ];
+  List<String> locations = [];
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -55,6 +51,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
         setState(() {
           selectedLocation = location;
         });
+        Navigator.of(context).pop();
       },
     );
   }
@@ -84,6 +81,21 @@ class _SchedulingPageState extends State<SchedulingPage> {
     );
   }
 
+  Future<void> _fetchLocations() async {
+    final locations = await LocationService.fetchLocations();
+    if (locations.isNotEmpty) {
+      setState(() {
+        this.locations = locations;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLocations();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,7 +123,29 @@ class _SchedulingPageState extends State<SchedulingPage> {
               ),
               SizedBox(height: 10.0),
               ElevatedButton(
-                onPressed: _showLocationDialog,
+                onPressed: () {
+                  if (locations.isNotEmpty) {
+                    _showLocationDialog();
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Locations Unavailable'),
+                          content: Text('No locations available at the moment.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('OK'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                },
                 child: Text('Selecionar Local'),
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFFE24646),
