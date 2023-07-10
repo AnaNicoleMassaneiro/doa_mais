@@ -1,7 +1,10 @@
+import 'package:doa_mais/src/features/login/service/loginService.dart';
 import 'package:flutter/material.dart';
-import 'package:doa_mais/src/features/signup/signup.dart';
 
 import '../../Widget/bezierContainer.dart';
+import '../appointments/appointmentsPage.dart';
+import '../signup/signup.dart';
+
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key, this.title}) : super(key: key);
@@ -13,6 +16,53 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  bool isLoading = false;
+  LoginService _loginService = LoginService();
+
+  Future<void> _login() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final email = emailController.text;
+    final password = passwordController.text;
+
+    final success = await _loginService.login(email, password);
+
+    if (success) {
+      // Login successful
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AppointmentsPage()),
+      );
+    } else {
+      // Login failed
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Erro'),
+            content: Text('Usuário ou senha inválidos.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -34,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _entryField(String title, {bool isPassword = false}) {
+  Widget _entryField(String title, TextEditingController controller, {bool isPassword = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -48,37 +98,44 @@ class _LoginPageState extends State<LoginPage> {
             height: 10,
           ),
           TextField(
-              obscureText: isPassword,
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  fillColor: Color(0xfff3f3f4),
-                  filled: true))
+            controller: controller,
+            obscureText: isPassword,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _submitButton() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(vertical: 15),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
+    return GestureDetector(
+      onTap: isLoading ? null : _login  ,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(5)),
           boxShadow: <BoxShadow>[
             BoxShadow(
-                color: Colors.grey.shade200,
-                offset: Offset(2, 4),
-                blurRadius: 5,
-                spreadRadius: 2)
+              color: Colors.grey.shade200,
+              offset: Offset(2, 4),
+              blurRadius: 5,
+              spreadRadius: 2,
+            ),
           ],
-          gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [Color(0xffe24646), Color(0xffe24646)])),
-      child: Text(
-        'Login',
-        style: TextStyle(fontSize: 20, color: Colors.white),
+          gradient: const LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [Color(0xffe24646), Color(0xffe24646)],
+          ),
+        ),
+        child: const Text(
+          'Login',
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
       ),
     );
   }
@@ -159,21 +216,21 @@ class _LoginPageState extends State<LoginPage> {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-          text: 'DOA+',
-          style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w700,
-              color: Color(0xffe24646)
-          ),
-         ),
+        text: 'DOA+',
+        style: TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.w700,
+          color: Color(0xffe24646),
+        ),
+      ),
     );
   }
 
   Widget _emailPasswordWidget() {
     return Column(
       children: <Widget>[
-        _entryField("Email"),
-        _entryField("Senha", isPassword: true),
+        _entryField("Email", emailController),
+        _entryField("Senha", passwordController, isPassword: true),
       ],
     );
   }
@@ -182,44 +239,50 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-        body: Container(
-      height: height,
-      child: Stack(
-        children: <Widget>[
-          Positioned(
+      body: Container(
+        height: height,
+        child: Stack(
+          children: <Widget>[
+            Positioned(
               top: -height * .15,
               right: -MediaQuery.of(context).size.width * .4,
-              child: BezierContainer()),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(height: height * .2),
-                  _title(),
-                  SizedBox(height: 50),
-                  _emailPasswordWidget(),
-                  SizedBox(height: 20),
-                  _submitButton(),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    alignment: Alignment.centerRight,
-                    child: Text('Esqueceu a senha?',
+              child: BezierContainer(),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(height: height * .2),
+                    _title(),
+                    SizedBox(height: 50),
+                    _emailPasswordWidget(),
+                    SizedBox(height: 20),
+                    _submitButton(),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Esqueceu a senha?',
                         style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w500)),
-                  ),
-                  _divider(),
-                  SizedBox(height: height * .055),
-                  _createAccountLabel(),
-                ],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    _divider(),
+                    SizedBox(height: height * .055),
+                    _createAccountLabel(),
+                  ],
+                ),
               ),
             ),
-          ),
-          Positioned(top: 40, left: 0, child: _backButton()),
-        ],
+            Positioned(top: 40, left: 0, child: _backButton()),
+          ],
+        ),
       ),
-    ));
+    );
   }
 }

@@ -54,7 +54,7 @@ Este projeto está licenciado sob a [MIT License](https://opensource.org/license
 
 ## Contato
 
-Se você tiver alguma dúvida ou sugestão relacionada a este projeto, entre em contato comigo em [ana.nicol02@gmail.com](mailto:ana.nicol02@gmail.com).
+Se você tiver alguma dúvida ou sugestão relacionada a este projeto, entre em contato comigo em [ana.nicole02@gmail.com](mailto:ana.nicole02@gmail.com).
 
 ---
 
