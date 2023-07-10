@@ -1,10 +1,10 @@
 import 'package:doa_mais/src/features/login/service/loginService.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Widget/bezierContainer.dart';
 import '../appointments/appointmentsPage.dart';
 import '../signup/signup.dart';
-
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key, this.title}) : super(key: key);
@@ -33,7 +33,8 @@ class _LoginPageState extends State<LoginPage> {
 
     if (success) {
       // Login successful
-      Navigator.push(
+      await _saveLoginStatus(true); // Salva o status de login como true
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => AppointmentsPage()),
       );
@@ -63,6 +64,31 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  Future<void> _saveLoginStatus(bool isLoggedIn) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', isLoggedIn);
+  }
+
+  Future<bool> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    return isLoggedIn;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus().then((isLoggedIn) {
+      if (isLoggedIn) {
+        // Redirecionar para a tela principal
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AppointmentsPage()),
+        );
+      }
+    });
+  }
+
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -84,7 +110,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _entryField(String title, TextEditingController controller, {bool isPassword = false}) {
+  Widget _entryField(String title, TextEditingController controller,
+      {bool isPassword = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -111,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _submitButton() {
     return GestureDetector(
-      onTap: isLoading ? null : _login  ,
+      onTap: isLoading ? null : _login,
       child: Container(
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -211,7 +238,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-
   Widget _title() {
     return RichText(
       textAlign: TextAlign.center,
@@ -255,7 +281,7 @@ class _LoginPageState extends State<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: height * .2),
+                    SizedBox(height:height * .2),
                     _title(),
                     SizedBox(height: 50),
                     _emailPasswordWidget(),
