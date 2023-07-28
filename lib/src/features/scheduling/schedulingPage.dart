@@ -5,7 +5,6 @@ import 'dart:convert';
 import '../appointments/service/LocationService.dart';
 import '../login/HemobancoAddress.dart';
 import '../login/service/dateService.dart';
-import '../menu/MenuComponent.dart';
 import '../menu/TabBarComponent.dart';
 
 class SchedulingPage extends StatefulWidget {
@@ -18,7 +17,24 @@ class _SchedulingPageState extends State<SchedulingPage> {
   TimeOfDay selectedTime = TimeOfDay.now();
   String? selectedLocation;
   List<String> locations = [];
-  Set<int> availableDates = {}; // Use a Set to store unique days
+  List<DateTime> availableDates = [];
+
+  Future<void> _fetchAvailableDates() async {
+    try {
+      List<DateTime> dates = await DateService.fetchAvailableDates();
+      setState(() {
+        this.availableDates = dates;
+      });
+    } catch (e) {
+      // Handle any errors that occurred during the API call.
+      // You may show an error message or handle it based on your app's requirements.
+      print('Error fetching available dates: $e');
+    }
+  }
+
+  bool isDateAvailable(DateTime date) {
+    return availableDates.contains(date);
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -26,11 +42,37 @@ class _SchedulingPageState extends State<SchedulingPage> {
       initialDate: selectedDate,
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
+      selectableDayPredicate: (DateTime date) {
+        // Check if the date is available in the availableDates list
+        return isDateAvailable(date);
+      },
     );
-    if (pickedDate != null && pickedDate != selectedDate) {
-      setState(() {
-        selectedDate = pickedDate;
-      });
+
+    if (pickedDate != null) {
+      if (isDateAvailable(pickedDate)) {
+        setState(() {
+          selectedDate = pickedDate;
+        });
+      } else {
+        // Show error message if the selected date is not available
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Date Not Available'),
+              content: Text('The selected date is not available for scheduling.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
 
@@ -101,23 +143,6 @@ class _SchedulingPageState extends State<SchedulingPage> {
       // You may show an error message or handle it based on your app's requirements.
       print('Error fetching locations: $e');
     }
-  }
-
-  Future<void> _fetchAvailableDates() async {
-    try {
-      Set<int> dates = await DateService.fetchAvailableDates(); // Assuming DateService handles API call
-      setState(() {
-        this.availableDates = dates;
-      });
-    } catch (e) {
-      // Handle any errors that occurred during the API call.
-      // You may show an error message or handle it based on your app's requirements.
-      print('Error fetching available dates: $e');
-    }
-  }
-
-  bool isDateAvailable(DateTime date) {
-    return availableDates.contains(date.day);
   }
 
   @override
@@ -199,8 +224,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
                 onPressed: () => _selectDate(context),
                 child: Text('Selecionar Data'),
                 style: ElevatedButton.styleFrom(
-                  primary: isDateAvailable(selectedDate) ? Colors.green : Color(0xFFE24646),
-                  onPrimary: Colors.white,
+                  foregroundColor: Colors.white, backgroundColor: isDateAvailable(selectedDate) ? Colors.green : Color(0xFFE24646),
                 ),
               ),
               SizedBox(height: 10.0),
