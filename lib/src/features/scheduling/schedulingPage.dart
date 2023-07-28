@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../appointments/service/LocationService.dart';
+import '../login/HemobancoAddress.dart';
+import '../login/service/dateService.dart';
 import '../menu/MenuComponent.dart';
 import '../menu/TabBarComponent.dart';
 
@@ -16,6 +18,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
   TimeOfDay selectedTime = TimeOfDay.now();
   String? selectedLocation;
   List<String> locations = [];
+  Set<int> availableDates = {}; // Use a Set to store unique days
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -61,7 +64,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Select Location'),
+          title: Text('Selecione o Local da Doação'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: locations.map((location) {
@@ -82,18 +85,46 @@ class _SchedulingPageState extends State<SchedulingPage> {
   }
 
   Future<void> _fetchLocations() async {
-    final locations = await LocationService.fetchLocations();
-    if (locations.isNotEmpty) {
-      setState(() {
-        this.locations = locations;
-      });
+    try {
+      List<HemobancoAddress> locations = await LocationService.fetchLocations();
+      if (locations.isNotEmpty) {
+        List<String> addresses = locations.map((location) => location.address).toList();
+        setState(() {
+          this.locations = addresses;
+        });
+      } else {
+        // Handle the case where the API returns an empty list of locations.
+        // You may show an error message or handle it based on your app's requirements.
+      }
+    } catch (e) {
+      // Handle any errors that occurred during the API call.
+      // You may show an error message or handle it based on your app's requirements.
+      print('Error fetching locations: $e');
     }
+  }
+
+  Future<void> _fetchAvailableDates() async {
+    try {
+      Set<int> dates = await DateService.fetchAvailableDates(); // Assuming DateService handles API call
+      setState(() {
+        this.availableDates = dates;
+      });
+    } catch (e) {
+      // Handle any errors that occurred during the API call.
+      // You may show an error message or handle it based on your app's requirements.
+      print('Error fetching available dates: $e');
+    }
+  }
+
+  bool isDateAvailable(DateTime date) {
+    return availableDates.contains(date.day);
   }
 
   @override
   void initState() {
     super.initState();
     _fetchLocations();
+    _fetchAvailableDates();
   }
 
   @override
@@ -155,7 +186,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
               SizedBox(height: 10.0),
               if (selectedLocation != null)
                 Text(
-                  'Local selecionado: $selectedLocation',
+                  'Local: $selectedLocation',
                   style: TextStyle(fontSize: 16.0),
                 ),
               SizedBox(height: 20.0),
@@ -168,7 +199,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
                 onPressed: () => _selectDate(context),
                 child: Text('Selecionar Data'),
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xFFE24646),
+                  primary: isDateAvailable(selectedDate) ? Colors.green : Color(0xFFE24646),
                   onPrimary: Colors.white,
                 ),
               ),

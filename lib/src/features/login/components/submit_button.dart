@@ -1,19 +1,18 @@
-import 'dart:html' as html;
 import 'package:flutter/material.dart';
 
-class SubmitButton extends StatelessWidget {
-  final html.VoidCallback? onPressed; // Use 'html.VoidCallback' as the type
+class SubmitButtonWidget extends StatelessWidget {
+  final VoidCallback onTap;
   final bool isLoading;
 
-  const SubmitButton({
-    required this.onPressed,
+  const SubmitButtonWidget({
+    required this.onTap,
     this.isLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: isLoading ? null : onPressed,
+      onTap: isLoading ? null : onTap,
       child: Container(
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -35,7 +34,7 @@ class SubmitButton extends StatelessWidget {
           ),
         ),
         child: const Text(
-          'Cadastre-se agora',
+          'Login',
           style: TextStyle(fontSize: 20, color: Colors.white),
         ),
       ),

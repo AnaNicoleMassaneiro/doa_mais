@@ -2,7 +2,6 @@ import 'package:doa_mais/src/features/login/service/loginService.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../Widget/bezierContainer.dart';
 import '../appointments/appointmentsPage.dart';
 import '../signup/signup.dart';
 
@@ -269,11 +268,6 @@ class _LoginPageState extends State<LoginPage> {
         height: height,
         child: Stack(
           children: <Widget>[
-            Positioned(
-              top: -height * .15,
-              right: -MediaQuery.of(context).size.width * .4,
-              child: BezierContainer(),
-            ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: SingleChildScrollView(

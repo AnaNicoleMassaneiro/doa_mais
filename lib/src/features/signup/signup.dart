@@ -1,7 +1,6 @@
 import 'package:doa_mais/src/features/signup/service/users.dart';
 import 'package:flutter/material.dart';
 
-import '../../Widget/bezierContainer.dart';
 import '../../shared/components/CustomDialog.dart';
 import '../../shared/components/SubmitButton.dart';
 import '../login/loginPage.dart';
@@ -146,11 +145,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 height: height,
                 child: Stack(
                     children: <Widget>[
-                        Positioned(
-                            top: -height * .15,
-                            right: -MediaQuery.of(context).size.width * .4,
-                            child: BezierContainer(),
-                        ),
                         Container(
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: SingleChildScrollView(

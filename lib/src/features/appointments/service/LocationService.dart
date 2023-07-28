@@ -1,15 +1,17 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../../login/HemobancoAddress.dart';
+
 class LocationService {
-  static Future<List<String>> fetchLocations() async {
+  static Future<List<HemobancoAddress>> fetchLocations() async {
     final response = await http.get(Uri.parse('http://localhost:8080/hemobancos'));
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final List<dynamic> data = jsonDecode(response.body);
       if (data is List<dynamic>) {
-        return List<String>.from(data.map((location) => location.toString()));
+        return data.map((location) => HemobancoAddress.fromJson(location)).toList();
       }
     }
-    return []; // Return an empty list if the response is not successful or the data is not in the expected format.
+    return [];
   }
 }
