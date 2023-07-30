@@ -40,36 +40,18 @@ class _SchedulingPageState extends State<SchedulingPage> {
       initialDate: getNextAvailableDate(selectedDate),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
-      selectableDayPredicate: null,
+      selectableDayPredicate: (DateTime date) {
+        return isDateAvailable(date);
+      },
     );
 
     if (pickedDate != null) {
-      if (isDateAvailable(pickedDate)) {
-        setState(() {
-          selectedDate = pickedDate;
-        });
-      } else {
-        // Show error message if the selected date is not available
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Date Not Available'),
-              content: Text('The selected date is not available for scheduling.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      }
+      setState(() {
+        selectedDate = pickedDate;
+      });
     }
   }
+
 
   Future<void> _fetchAvailableDatesForHemobanco(int hemobancoId) async {
     try {
@@ -113,7 +95,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: Text('Cancelar'),
             ),
           ],
         );
@@ -257,7 +239,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
                 onPressed: () => _selectDate(context),
                 child: Text('Selecionar Data'),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: isDateAvailable(selectedDate) ? Colors.green : Color(0xFFE24646),
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color(0xFFE24646),
                 ),
               ),
               SizedBox(height: 10.0),

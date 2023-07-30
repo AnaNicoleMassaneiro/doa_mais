@@ -7,15 +7,27 @@ class DateService {
 
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
-      List<DateTime> dates = [];
-      for (var dateData in jsonData) {
-        // Assuming that the dates are stored as strings in the format 'YYYY-MM-DD'
-        DateTime date = DateTime.parse(dateData['date']);
-        dates.add(date);
+
+      // Check if jsonData is a map and contains the 'availableDates' key
+      if (jsonData is Map<String, dynamic> && jsonData.containsKey('availableDates')) {
+        var datesList = jsonData['availableDates'];
+
+        // If datesList is a list, process the dates
+        if (datesList is List) {
+          List<DateTime> dates = [];
+          for (var dateData in datesList) {
+            // Assuming that the dates are stored as strings in the format 'YYYY-MM-DD'
+            DateTime date = DateTime.parse(dateData['date']);
+            dates.add(date);
+          }
+          return dates;
+        }
       }
-      return dates;
+
+      throw Exception('Failed to fetch available dates for location');
     } else {
       throw Exception('Failed to fetch available dates for location');
     }
   }
+
 }
