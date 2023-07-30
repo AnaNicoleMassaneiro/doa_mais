@@ -23,7 +23,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
   bool showTime = false;
   bool showScheduleButton = false;
   List<String> availableTimeSlots = [];
-
+  bool isDateSelected = false;
+  bool isTimeSelected = false;
 
   bool isDateAvailable(DateTime date) {
     return availableDates.contains(date);
@@ -66,7 +67,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
     if (pickedDate != null) {
       setState(() {
         selectedDate = pickedDate;
-        availableTimeSlots.clear(); // Clear the list when a new date is selected
+        availableTimeSlots.clear();
+        isDateSelected = true;// Clear the list when a new date is selected
       });
 
       // Fetch available time slots for the selected date
@@ -228,130 +230,141 @@ class _SchedulingPageState extends State<SchedulingPage> {
         backgroundColor: Color(0xFFE24646),
       ),
       body: Container(
-        alignment: Alignment.center,
         padding: EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Local de Doação:',
-                style: TextStyle(fontSize: 18.0),
-              ),
-              SizedBox(height: 10.0),
-              ElevatedButton(
-                onPressed: () {
-                  if (locations.isNotEmpty) {
-                    _showLocationDialog();
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Locais indisponíveis'),
-                          content: Text('Nenhum local disponível no momento.'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('OK'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                },
-                child: Text('Selecionar Local'),
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Color(0xFFE24646),
-                ),
-              ),
-              SizedBox(height: 10.0),
-              if (selectedLocation != null)
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 10.0),
                 Text(
-                  'Local: $selectedLocation',
+                  'Local de Doação:',
                   style: TextStyle(fontSize: 16.0),
                 ),
-              SizedBox(height: 20.0),
-              Text(
-                'Data do agendamento:',
-                style: TextStyle(fontSize: 18.0),
-              ),
-              SizedBox(height: 10.0),
-              ElevatedButton(
-                onPressed: () => _selectDate(context),
-                child: Text('Selecionar Data'),
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Color(0xFFE24646),
-                ),
-              ),
-              SizedBox(height: 10.0),
-              Text(
-                'Data selecionada: ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                style: TextStyle(fontSize: 16.0),
-              ),
-              if (availableTimeSlots.isNotEmpty)
-                Column(
-                  children: [
-                    SizedBox(height: 20.0),
-                    Text(
-                      'Horários disponíveis:',
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                    SizedBox(height: 10.0),
-                    Wrap(
-                      spacing: 10.0,
-                      runSpacing: 10.0,
-                      children: availableTimeSlots.map((timeSlot) {
-                        return Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // Add any functionality you want when a time slot is selected
-                              // For example, you can set the selectedTime variable with the chosen time
-                              setState(() {
-                                selectedTime = TimeOfDay(
-                                  hour: int.parse(timeSlot.split(':')[0]),
-                                  minute: int.parse(timeSlot.split(':')[1]),
-                                );
-                              });
-                            },
-                            child: Text(timeSlot),
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.red,
-                              onPrimary: Colors.white,
-                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              SizedBox(height: 10.0),
+                SizedBox(height: 10.0),
+                ElevatedButton(
+                  onPressed: () {
+                    if (locations.isNotEmpty) {
+                      _showLocationDialog();
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Locais indisponíveis'),
+                            content: Text('Nenhum local disponível no momento.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
 
-              SizedBox(height: 10.0),
-              Text(
-                'Horário selecionado: ${selectedTime.hour}:${selectedTime.minute}',
-                style: TextStyle(fontSize: 16.0),
-              ),
-              SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: () {
-                  // Lógica para agendar o horário
-                },
-                child: Text('Agendar'),
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xFFE24646),
-                  onPrimary: Colors.white,
+                  child: Text('Selecionar Local'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                    textStyle: TextStyle(fontSize: 16.0),
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color(0xFFE24646),
+                  ),
                 ),
-              ),
-            ],
+                SizedBox(height: 20.0),
+                if (selectedLocation != null)
+                  Text(
+                    'Local: $selectedLocation',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                SizedBox(height: 30.0),
+                if (selectedLocation != null)
+                  Text(
+                    'Data do agendamento:',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                  SizedBox(height: 10.0),
+                if (selectedLocation != null)
+                  ElevatedButton(
+                    onPressed: () => _selectDate(context),
+                    child: Text('Selecionar Data'),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                      textStyle: TextStyle(fontSize: 16.0),
+                      foregroundColor: Colors.white,
+                      backgroundColor: Color(0xFFE24646),
+                    ),
+                  ),
+                SizedBox(height: 10.0),
+                if (isDateSelected) // Mostrar texto de data selecionada somente se houver data selecionada
+                  Text(
+                    'Data selecionada: ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                if (availableTimeSlots.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: 20.0),
+                      Text(
+                        'Horários disponíveis:',
+                        style: TextStyle(fontSize: 16.0),
+                      ),
+                      SizedBox(height: 10.0),
+                      Column(
+                        children: availableTimeSlots.map((timeSlot) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  selectedTime = TimeOfDay(
+                                    hour: int.parse(timeSlot.split(':')[0]),
+                                    minute: int.parse(timeSlot.split(':')[1]),
+                                  );
+                                  isTimeSelected = true;
+                                });
+                              },
+                              child: Text(timeSlot),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                                textStyle: TextStyle(fontSize: 16.0),
+                                primary: Colors.redAccent,
+                                onPrimary: Colors.white,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                SizedBox(height: 30.0),
+                if (isTimeSelected) // Mostrar texto de horário selecionado somente se houver horário selecionado
+                  Text(
+                    'Horário selecionado: ${selectedTime.hour}:${selectedTime.minute}',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                SizedBox(height: 30.0),
+                 if (isTimeSelected)
+                ElevatedButton(
+                  onPressed: () {
+                    // Lógica para agendar o horário
+                  },
+                  child: Text('Agendar'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    textStyle: TextStyle(fontSize: 16.0),
+                    primary: Color(0xFFE24646),
+                    onPrimary: Colors.white,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
