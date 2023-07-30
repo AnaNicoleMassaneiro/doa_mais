@@ -19,6 +19,11 @@ class _SchedulingPageState extends State<SchedulingPage> {
   List<HemobancoAddress> locations = [];
   List<DateTime> availableDates = [];
   String? selectedLocation;
+  bool showDate = false;
+  bool showTime = false;
+  bool showScheduleButton = false;
+  List<String> availableTimeSlots = [];
+
 
   bool isDateAvailable(DateTime date) {
     return availableDates.contains(date);
@@ -40,16 +45,51 @@ class _SchedulingPageState extends State<SchedulingPage> {
       initialDate: getNextAvailableDate(selectedDate),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
-      selectableDayPredicate: (DateTime date) {
-        return isDateAvailable(date);
+      selectableDayPredicate: _isDateSelectable,
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            // Define the text color for selectable days
+            primaryColor: Colors.red,
+            // Define the text color for the header of the date picker
+            hintColor: Colors.red,
+            // Define the color for the "Today" text
+            colorScheme: ColorScheme.light(primary: Colors.red),
+            // Define the text color for the "Today" day
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
       },
     );
 
     if (pickedDate != null) {
       setState(() {
         selectedDate = pickedDate;
+        availableTimeSlots.clear(); // Clear the list when a new date is selected
+      });
+
+      // Fetch available time slots for the selected date
+      String formattedDate = "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
+      List<String> timeSlots = await DateService.fetchAvailableTimeSlotsForDate(selectedHemobancoId!, formattedDate);
+
+      setState(() {
+        availableTimeSlots = timeSlots;
       });
     }
+  }
+
+  Widget _buildTimeSlotItem(String timeSlot) {
+    return ListTile(
+      title: Text(timeSlot),
+      // Add any functionality you want when a time slot is selected
+      onTap: () {},
+    );
+  }
+
+
+  bool _isDateSelectable(DateTime date) {
+    return isDateAvailable(date);
   }
 
 
@@ -65,20 +105,14 @@ class _SchedulingPageState extends State<SchedulingPage> {
     }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: selectedTime,
-    );
-
-    if (pickedTime != null && pickedTime != selectedTime) {
-      setState(() {
-        selectedTime = pickedTime;
-      });
-    }
-  }
-
   void _showLocationDialog() {
+    setState(() {
+      selectedDate = DateTime.now();
+      selectedTime = TimeOfDay.now();
+      showDate = false;
+      showTime = false;
+      showScheduleButton = false;
+    });
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -100,7 +134,16 @@ class _SchedulingPageState extends State<SchedulingPage> {
           ],
         );
       },
-    );
+    ).then((value) {
+      // Update visibility of date, time, and schedule button based on location selection
+      if (selectedLocation != null) {
+        setState(() {
+          showDate = true;
+          showTime = true;
+          showScheduleButton = true;
+        });
+      }
+    });
   }
 
   Future<void> _fetchLocations() async {
@@ -134,6 +177,10 @@ class _SchedulingPageState extends State<SchedulingPage> {
         if (location.id != null) {
           // Use the LocationService to fetch the Hemobanco by name
           HemobancoAddress locationDetails = await LocationService.fetchLocationByName(location.id!);
+
+          setState(() {
+            selectedHemobancoId = locationDetails.id;
+          });
 
           // Fetch available dates for the selected Hemobanco
           await _fetchAvailableDatesForHemobanco(locationDetails.id!);
@@ -202,8 +249,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Locations Unavailable'),
-                          content: Text('No locations available at the moment.'),
+                          title: Text('Locais indisponíveis'),
+                          content: Text('Nenhum local disponível no momento.'),
                           actions: [
                             TextButton(
                               onPressed: () {
@@ -248,20 +295,24 @@ class _SchedulingPageState extends State<SchedulingPage> {
                 'Data selecionada: ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
                 style: TextStyle(fontSize: 16.0),
               ),
-              SizedBox(height: 20.0),
-              Text(
-                'Horário do agendamento:',
-                style: TextStyle(fontSize: 18.0),
-              ),
-              SizedBox(height: 10.0),
-              ElevatedButton(
-                onPressed: () => _selectTime(context),
-                child: Text('Selecionar Horário'),
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xFFE24646),
-                  onPrimary: Colors.white,
+              if (availableTimeSlots.isNotEmpty)
+                Column(
+                  children: [
+                    SizedBox(height: 20.0),
+                    Text(
+                      'Horários disponíveis:',
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                    SizedBox(height: 10.0),
+                    for (String timeSlot in availableTimeSlots)
+                      Text(
+                        timeSlot,
+                        style: TextStyle(fontSize: 16.0),
+                      ),
+                  ],
                 ),
-              ),
+              SizedBox(height: 10.0),
+
               SizedBox(height: 10.0),
               Text(
                 'Horário selecionado: ${selectedTime.hour}:${selectedTime.minute}',
