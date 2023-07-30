@@ -36,10 +36,24 @@ class _SchedulingPageState extends State<SchedulingPage> {
     return availableDates.contains(date);
   }
 
+  DateTime getNextAvailableDate(DateTime currentDate) {
+    // Find the next available date after the current date
+    // Loop through availableDates and return the first date that is after the current date
+    for (DateTime date in availableDates) {
+      if (date.isAfter(currentDate)) {
+        return date;
+      }
+    }
+
+    // If no available date is found after the current date,
+    // return the current date itself
+    return currentDate;
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: selectedDate,
+      initialDate: getNextAvailableDate(selectedDate),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
       selectableDayPredicate: (DateTime date) {
@@ -75,6 +89,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
       }
     }
   }
+
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? pickedTime = await showTimePicker(
@@ -204,8 +219,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
                 },
                 child: Text('Selecionar Local'),
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xFFE24646),
-                  onPrimary: Colors.white,
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color(0xFFE24646),
                 ),
               ),
               SizedBox(height: 10.0),
