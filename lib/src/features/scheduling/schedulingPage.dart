@@ -15,38 +15,22 @@ class SchedulingPage extends StatefulWidget {
 class _SchedulingPageState extends State<SchedulingPage> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
-  String? selectedLocation;
-  List<String> locations = [];
+  int? selectedHemobancoId;
+  List<HemobancoAddress> locations = [];
   List<DateTime> availableDates = [];
-
-  Future<void> _fetchAvailableDates() async {
-    try {
-      List<DateTime> dates = await DateService.fetchAvailableDates();
-      setState(() {
-        this.availableDates = dates;
-      });
-    } catch (e) {
-      // Handle any errors that occurred during the API call.
-      // You may show an error message or handle it based on your app's requirements.
-      print('Error fetching available dates: $e');
-    }
-  }
+  String? selectedLocation;
 
   bool isDateAvailable(DateTime date) {
     return availableDates.contains(date);
   }
 
   DateTime getNextAvailableDate(DateTime currentDate) {
-    // Find the next available date after the current date
-    // Loop through availableDates and return the first date that is after the current date
     for (DateTime date in availableDates) {
       if (date.isAfter(currentDate)) {
         return date;
       }
     }
 
-    // If no available date is found after the current date,
-    // return the current date itself
     return currentDate;
   }
 
@@ -56,10 +40,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
       initialDate: getNextAvailableDate(selectedDate),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
-      selectableDayPredicate: (DateTime date) {
-        // Check if the date is available in the availableDates list
-        return isDateAvailable(date);
-      },
+      selectableDayPredicate: null,
     );
 
     if (pickedDate != null) {
@@ -90,6 +71,17 @@ class _SchedulingPageState extends State<SchedulingPage> {
     }
   }
 
+  Future<void> _fetchAvailableDatesForHemobanco(int hemobancoId) async {
+    try {
+      List<DateTime> dates = await DateService.fetchAvailableDatesForLocation(hemobancoId);
+
+      setState(() {
+        this.availableDates = dates;
+      });
+    } catch (e) {
+      print('Error fetching available dates for Hemobanco: $e');
+    }
+  }
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? pickedTime = await showTimePicker(
@@ -102,18 +94,6 @@ class _SchedulingPageState extends State<SchedulingPage> {
         selectedTime = pickedTime;
       });
     }
-  }
-
-  Widget _buildLocationItem(String location) {
-    return ListTile(
-      title: Text(location),
-      onTap: () {
-        setState(() {
-          selectedLocation = location;
-        });
-        Navigator.of(context).pop();
-      },
-    );
   }
 
   void _showLocationDialog() {
@@ -145,7 +125,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
     try {
       List<HemobancoAddress> locations = await LocationService.fetchLocations();
       if (locations.isNotEmpty) {
-        List<String> addresses = locations.map((location) => location.address).toList();
+        List<HemobancoAddress> addresses = locations.map((location) => location).toList();
         setState(() {
           this.locations = addresses;
         });
@@ -160,11 +140,49 @@ class _SchedulingPageState extends State<SchedulingPage> {
     }
   }
 
+  Widget _buildLocationItem(HemobancoAddress location) {
+    return ListTile(
+      title: Text(location.address),
+      onTap: () async {
+        setState(() {
+          selectedLocation = location.address;
+        });
+        Navigator.of(context).pop();
+
+        if (location.id != null) {
+          // Use the LocationService to fetch the Hemobanco by name
+          HemobancoAddress locationDetails = await LocationService.fetchLocationByName(location.id!);
+
+          // Fetch available dates for the selected Hemobanco
+          await _fetchAvailableDatesForHemobanco(locationDetails.id!);
+        } else {
+          // Handle the case when the ID is null (optional based on your app's requirements).
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Location ID Missing'),
+                content: Text('The selected location does not have an ID.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     _fetchLocations();
-    _fetchAvailableDates();
   }
 
   @override
