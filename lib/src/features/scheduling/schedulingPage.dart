@@ -304,11 +304,33 @@ class _SchedulingPageState extends State<SchedulingPage> {
                       style: TextStyle(fontSize: 18.0),
                     ),
                     SizedBox(height: 10.0),
-                    for (String timeSlot in availableTimeSlots)
-                      Text(
-                        timeSlot,
-                        style: TextStyle(fontSize: 16.0),
-                      ),
+                    Wrap(
+                      spacing: 10.0,
+                      runSpacing: 10.0,
+                      children: availableTimeSlots.map((timeSlot) {
+                        return Padding(
+                          padding: EdgeInsets.all(4.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // Add any functionality you want when a time slot is selected
+                              // For example, you can set the selectedTime variable with the chosen time
+                              setState(() {
+                                selectedTime = TimeOfDay(
+                                  hour: int.parse(timeSlot.split(':')[0]),
+                                  minute: int.parse(timeSlot.split(':')[1]),
+                                );
+                              });
+                            },
+                            child: Text(timeSlot),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.red,
+                              onPrimary: Colors.white,
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ],
                 ),
               SizedBox(height: 10.0),
