@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 class UserRepository {
   Future<bool> registerUser(
       String name, String cpf, String password, String email) async {
-    print('==================');
     final url = 'http://localhost:8080/users';
 
     final body = jsonEncode({
@@ -19,9 +18,6 @@ class UserRepository {
       headers: {'Content-Type': 'application/json'},
       body: body,
     );
-
-    print('========12312321312===');
-    print(response);
 
     if (response.statusCode == 200) {
       print('Usuário registrado com sucesso');

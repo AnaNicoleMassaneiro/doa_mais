@@ -2,8 +2,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../User.dart';
+
 class LoginService {
-  Future<bool> login(String email, String password) async {
+  Future<User> login(String email, String password) async {
     final url = 'http://localhost:8080/login';
     final body = jsonEncode({
       'email': email,
@@ -16,14 +18,15 @@ class LoginService {
 
       if (response.statusCode == 200) {
         // Login successful
-        return true;
+        Map<String, dynamic> userData = jsonDecode(response.body);
+        return User.fromJson(userData);
       } else {
         // Login failed
-        return false;
+        throw Exception('Login failed');
       }
     } catch (error) {
       // Error during API call
-      return false;
+      throw Exception('Error during API call');
     }
   }
 }

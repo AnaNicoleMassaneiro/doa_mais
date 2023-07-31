@@ -1,5 +1,7 @@
+import 'package:doa_mais/src/features/scheduling/service/scheduleService.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../appointments/service/LocationService.dart';
@@ -38,6 +40,131 @@ class _SchedulingPageState extends State<SchedulingPage> {
     }
 
     return currentDate;
+  }
+
+  Future<void> _scheduleAppointment() async {
+    if (selectedLocation != null && isDateSelected && isTimeSelected) {
+      try {
+        int? userId = await _getUserId();
+
+        if (userId != null) {
+          bool success = await AppointmentService.scheduleAppointment(
+            hemobancoId: selectedHemobancoId!,
+            userId: userId,
+            date: selectedDate,
+            time: selectedTime,
+          );
+
+          if (success) {
+            // Show success modal dialog
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Successo'),
+                  content: Text('Doação agendada com sucesso.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                        Navigator.of(context).pop(); // Return to the previous screen
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          } else {
+            // Show error message if the appointment was not scheduled successfully
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Error'),
+                  content: Text('Failed to schedule appointment.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        } else {
+          // Handle the case when the user ID is null
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('User ID is null.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+
+      } catch (e) {
+        // Exception occurred while making the API call
+        // You can show an error message or handle it based on your app's requirements
+        print('Error scheduling appointment: $e');
+      }
+    } else {
+      // Show an error message that all fields are required before scheduling the appointment
+    }
+  }
+
+
+  void _showErrorModal(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(errorMessage),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSuccessModal() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Doação agendada'),
+          content: Text('Seu agendamento foi agendado com sucesso.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -210,10 +337,24 @@ class _SchedulingPageState extends State<SchedulingPage> {
     );
   }
 
+  Future<int?> _getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? userId = prefs.getInt('userId');
+    return userId;
+  }
+
   @override
   void initState() {
     super.initState();
     _fetchLocations();
+
+    _getUserId().then((userId) {
+      if (userId != null) {
+        print('User ID: $userId');
+      } else {
+        print('User ID not found.');
+      }
+    });
   }
 
   @override
@@ -344,25 +485,23 @@ class _SchedulingPageState extends State<SchedulingPage> {
                     ],
                   ),
                 SizedBox(height: 30.0),
-                if (isTimeSelected) // Mostrar texto de horário selecionado somente se houver horário selecionado
+                if (isTimeSelected)
                   Text(
                     'Horário selecionado: ${selectedTime.hour}:${selectedTime.minute}',
                     style: TextStyle(fontSize: 16.0),
                   ),
                 SizedBox(height: 30.0),
-                 if (isTimeSelected)
-                ElevatedButton(
-                  onPressed: () {
-                    // Lógica para agendar o horário
-                  },
-                  child: Text('Agendar'),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
-                    textStyle: TextStyle(fontSize: 16.0),
-                    primary: Color(0xFFE24646),
-                    onPrimary: Colors.white,
+                if (isTimeSelected)
+                  ElevatedButton(
+                    onPressed: _scheduleAppointment, // Call the _scheduleAppointment method when the button is clicked
+                    child: Text('Agendar'),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                      textStyle: TextStyle(fontSize: 16.0),
+                      primary: Color(0xFFE24646),
+                      onPrimary: Colors.white,
+                    ),
                   ),
-                ),
               ],
             ),
           ),

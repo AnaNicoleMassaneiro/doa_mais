@@ -28,11 +28,12 @@ class _LoginPageState extends State<LoginPage> {
     final email = emailController.text;
     final password = passwordController.text;
 
-    final success = await _loginService.login(email, password);
+    final userId = await _loginService.login(email, password);
 
-    if (success) {
+    if (userId != null) {
       // Login successful
-      await _saveLoginStatus(true); // Salva o status de login como true
+      await _saveLoginStatus(true); // Save the login status as true
+      await _saveUserId(userId.id); // Save the user ID in the cache
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => AppointmentsPage()),
@@ -43,8 +44,8 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Erro'),
-            content: Text('Usuário ou senha inválidos.'),
+            title: Text('Error'),
+            content: Text('Invalid email or password.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -62,6 +63,12 @@ class _LoginPageState extends State<LoginPage> {
       isLoading = false;
     });
   }
+
+  Future<void> _saveUserId(int userId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('userId', userId);
+  }
+
 
   Future<void> _saveLoginStatus(bool isLoggedIn) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
