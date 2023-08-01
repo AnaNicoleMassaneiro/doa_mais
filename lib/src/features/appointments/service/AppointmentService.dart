@@ -73,4 +73,18 @@ class AppointmentService {
     return false;
   }
 
+  static Future<bool> cancelDonation(int userId) async {
+    String url = 'http://localhost:8080/appointments/$userId';
+
+    try {
+      var response = await http.delete(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+     return false;
+    }
+  }
 }
