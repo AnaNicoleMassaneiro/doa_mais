@@ -1,8 +1,8 @@
-import 'dart:html' as html;
+
 import 'package:flutter/material.dart';
 
 class SubmitButton extends StatelessWidget {
-  final html.VoidCallback? onPressed; // Use 'html.VoidCallback' as the type
+  final VoidCallback? onPressed;
   final bool isLoading;
 
   const SubmitButton({

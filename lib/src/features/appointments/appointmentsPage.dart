@@ -1,15 +1,27 @@
 import 'package:doa_mais/src/features/appointments/service/AppointmentService.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../menu/MenuComponent.dart';
 import '../menu/TabBarComponent.dart';
 import 'components/ButtonPrimary.dart';
 import 'components/CircularGraphScreen.dart';
 import 'components/TextComponent.dart';
 
-class AppointmentsPage extends StatelessWidget {
+class AppointmentsPage extends StatefulWidget {
+  @override
+  _AppointmentsPageState createState() => _AppointmentsPageState();
+}
+
+class _AppointmentsPageState extends State<AppointmentsPage> {
   final List<String> menuItems = ['Item 1', 'Item 2', 'Item 3'];
   int selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Fetch appointment status when the widget is first created
+    _hasPendingAppointment();
+  }
 
   Future<int?> _getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

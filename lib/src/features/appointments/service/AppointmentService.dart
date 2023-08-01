@@ -9,6 +9,10 @@ class AppointmentService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+
+        if (data['timeRemainingDays'] == 0) {
+          return 0;
+        }
         return data['timeRemainingDays'];
       } else {
         return 0;
@@ -24,7 +28,6 @@ class AppointmentService {
     required DateTime date,
     required TimeOfDay time,
   }) async {
-
     try {
       final appointmentData = {
         'hemobancoId': hemobancoId,
@@ -40,14 +43,11 @@ class AppointmentService {
       );
 
       if (response.statusCode == 201) {
-        // Appointment successfully scheduled
         return true;
       } else {
-        // Error in scheduling appointment
         return false;
       }
     } catch (e) {
-      // Exception occurred while making the API call
       return false;
     }
   }
@@ -56,20 +56,16 @@ class AppointmentService {
     try {
       final response = await http.get(Uri.parse('http://localhost:8080/appointments/user/$userId'));
       if (response.statusCode == 200) {
-        // Decode the response JSON
         final jsonResponse = jsonDecode(response.body);
 
-        // Check if the response is a list and not empty
         if (jsonResponse != null && jsonResponse is List && jsonResponse.isNotEmpty) {
           return true;
         }
       }
     } catch (e) {
-      // Handle any errors that occurred during the request
       print('Error checking appointment status: $e');
     }
 
-    // There is no pending appointment or an error occurred
     return false;
   }
 
