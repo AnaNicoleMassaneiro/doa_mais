@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../appointments/appointmentsPage.dart';
 import '../appointments/service/AppointmentService.dart';
 import '../appointments/service/LocationService.dart';
 import '../login/HemobancoAddress.dart';
@@ -71,7 +72,12 @@ class _SchedulingPageState extends State<SchedulingPage> with SingleTickerProvid
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop(); // Close the dialog
-                        Navigator.of(context).pop(); // Return to the previous screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AppointmentsPage(),
+                          ),
+                        );// Return to the previous screen
                       },
                       child: Text('OK'),
                     ),

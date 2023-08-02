@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../appointmentsPage.dart';
 import '../service/AppointmentService.dart';
 
 class CircularGraphScreen extends StatefulWidget {
@@ -48,7 +49,12 @@ class _CircularGraphScreenState extends State<CircularGraphScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AppointmentsPage(),
+                      ),
+                    );
                   },
                   child: Text('OK'),
                 ),

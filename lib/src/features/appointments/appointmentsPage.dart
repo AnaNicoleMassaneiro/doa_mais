@@ -12,7 +12,6 @@ class AppointmentsPage extends StatefulWidget {
 }
 
 class _AppointmentsPageState extends State<AppointmentsPage> {
-  final List<String> menuItems = ['Item 1', 'Item 2', 'Item 3'];
   int selectedIndex = 0;
 
   @override
