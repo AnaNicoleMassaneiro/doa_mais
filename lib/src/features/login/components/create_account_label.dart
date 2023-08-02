@@ -27,17 +27,6 @@ class CreateAccountLabelWidget extends StatelessWidget {
                 color: Colors.red, // Change text color to red
               ),
             ),
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              'Cadastro',
-              style: TextStyle(
-                color: Color(0xffe24646),
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
           ],
         ),
       ),

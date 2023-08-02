@@ -18,21 +18,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   @override
   void initState() {
     super.initState();
-
-    // Fetch appointment status when the widget is first created
     _hasPendingAppointment();
-  }
-
-  Future<int?> _getUserId() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int? userId = prefs.getInt('userId');
-    return userId;
-  }
-
-  Future<bool> _hasPendingAppointment() async {
-    int? userId = await _getUserId();
-
-    return AppointmentService.hasPendingAppointment(userId!);
   }
 
   @override
@@ -84,8 +70,23 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       ),
       bottomNavigationBar: Container(
         width: double.infinity,
-        child: TabBarComponent(),
+        child: TabBarComponent(initialSelectedIndex: 0)
+
       ),
     );
   }
+
+
+  Future<int?> _getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? userId = prefs.getInt('userId');
+    return userId;
+  }
+
+  Future<bool> _hasPendingAppointment() async {
+    int? userId = await _getUserId();
+
+    return AppointmentService.hasPendingAppointment(userId!);
+  }
+
 }

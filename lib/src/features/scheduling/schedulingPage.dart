@@ -12,7 +12,7 @@ class SchedulingPage extends StatefulWidget {
   _SchedulingPageState createState() => _SchedulingPageState();
 }
 
-class _SchedulingPageState extends State<SchedulingPage> {
+class _SchedulingPageState extends State<SchedulingPage> with SingleTickerProviderStateMixin {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   int? selectedHemobancoId;
@@ -25,6 +25,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
   List<String> availableTimeSlots = [];
   bool isDateSelected = false;
   bool isTimeSelected = false;
+  late TabController _tabController;
 
   bool isDateAvailable(DateTime date) {
     return availableDates.contains(date);
@@ -38,6 +39,12 @@ class _SchedulingPageState extends State<SchedulingPage> {
     }
 
     return currentDate;
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _scheduleAppointment() async {
@@ -111,7 +118,6 @@ class _SchedulingPageState extends State<SchedulingPage> {
             },
           );
         }
-
       } catch (e) {
         print('Error scheduling appointment: $e');
       }
@@ -148,12 +154,14 @@ class _SchedulingPageState extends State<SchedulingPage> {
       setState(() {
         selectedDate = pickedDate;
         availableTimeSlots.clear();
-        isDateSelected = true;// Clear the list when a new date is selected
+        isDateSelected = true; // Clear the list when a new date is selected
       });
 
       // Fetch available time slots for the selected date
-      String formattedDate = "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
-      List<String> timeSlots = await DateService.fetchAvailableTimeSlotsForDate(selectedHemobancoId!, formattedDate);
+      String formattedDate =
+          "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
+      List<String> timeSlots = await DateService.fetchAvailableTimeSlotsForDate(
+          selectedHemobancoId!, formattedDate);
 
       setState(() {
         availableTimeSlots = timeSlots;
@@ -165,10 +173,10 @@ class _SchedulingPageState extends State<SchedulingPage> {
     return isDateAvailable(date);
   }
 
-
   Future<void> _fetchAvailableDatesForHemobanco(int hemobancoId) async {
     try {
-      List<DateTime> dates = await DateService.fetchAvailableDatesForLocation(hemobancoId);
+      List<DateTime> dates =
+          await DateService.fetchAvailableDatesForLocation(hemobancoId);
 
       setState(() {
         this.availableDates = dates;
@@ -223,7 +231,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
     try {
       List<HemobancoAddress> locations = await LocationService.fetchLocations();
       if (locations.isNotEmpty) {
-        List<HemobancoAddress> addresses = locations.map((location) => location).toList();
+        List<HemobancoAddress> addresses =
+            locations.map((location) => location).toList();
         setState(() {
           this.locations = addresses;
         });
@@ -249,7 +258,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
 
         if (location.id != null) {
           // Use the LocationService to fetch the Hemobanco by name
-          HemobancoAddress locationDetails = await LocationService.fetchLocationByName(location.id!);
+          HemobancoAddress locationDetails =
+              await LocationService.fetchLocationByName(location.id!);
 
           setState(() {
             selectedHemobancoId = locationDetails.id;
@@ -291,6 +301,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
   void initState() {
     super.initState();
     _fetchLocations();
+    _tabController = TabController(length: 3, vsync: this);
 
     _getUserId().then((userId) {
       if (userId != null) {
@@ -338,7 +349,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: Text('Locais indisponíveis'),
-                            content: Text('Nenhum local disponível no momento.'),
+                            content:
+                                Text('Nenhum local disponível no momento.'),
                             actions: [
                               TextButton(
                                 onPressed: () {
@@ -352,10 +364,10 @@ class _SchedulingPageState extends State<SchedulingPage> {
                       );
                     }
                   },
-
                   child: Text('Selecionar Local'),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                     textStyle: TextStyle(fontSize: 16.0),
                     foregroundColor: Colors.white,
                     backgroundColor: Color(0xFFE24646),
@@ -373,13 +385,14 @@ class _SchedulingPageState extends State<SchedulingPage> {
                     'Data do agendamento:',
                     style: TextStyle(fontSize: 16.0),
                   ),
-                  SizedBox(height: 10.0),
+                SizedBox(height: 10.0),
                 if (selectedLocation != null)
                   ElevatedButton(
                     onPressed: () => _selectDate(context),
                     child: Text('Selecionar Data'),
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 24.0, vertical: 16.0),
                       textStyle: TextStyle(fontSize: 16.0),
                       foregroundColor: Colors.white,
                       backgroundColor: Color(0xFFE24646),
@@ -417,7 +430,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
                               },
                               child: Text(timeSlot),
                               style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 24.0, vertical: 16.0),
                                 textStyle: TextStyle(fontSize: 16.0),
                                 primary: Colors.redAccent,
                                 onPrimary: Colors.white,
@@ -451,7 +465,8 @@ class _SchedulingPageState extends State<SchedulingPage> {
           ),
         ),
       ),
-      bottomNavigationBar: TabBarComponent(),
+      bottomNavigationBar: TabBarComponent(initialSelectedIndex: 0)
+
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:doa_mais/src/features/login/loginPage.dart';
 import 'package:doa_mais/src/features/welcome/welcomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: WelcomePage(),
+      home: LoginPage(),
     );
   }
 }
