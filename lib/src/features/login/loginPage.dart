@@ -209,14 +209,6 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               width: 10,
             ),
-            Text(
-              'Cadastro',
-              style: TextStyle(
-                color: Color(0xffe24646),
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
           ],
         ),
       ),
