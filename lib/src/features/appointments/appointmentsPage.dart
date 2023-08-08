@@ -1,10 +1,11 @@
-import 'package:doa_mais/src/features/appointments/service/AppointmentService.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../menu/TabBarComponent.dart';
 import 'components/ButtonPrimary.dart';
 import 'components/CircularGraphScreen.dart';
 import 'components/TextComponent.dart';
+import 'components/appointment_card.dart';
+import '../appointments/service/AppointmentService.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppointmentsPage extends StatefulWidget {
   @override
@@ -61,6 +62,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                       ],
                     ),
                   ),
+                  // Adjusted the height of the card using Expanded widget
+                  AppointmentCard(),
                 ],
               );
             }
@@ -69,12 +72,10 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       ),
       bottomNavigationBar: Container(
         width: double.infinity,
-        child: TabBarComponent(initialSelectedIndex: 0)
-
+        child: TabBarComponent(initialSelectedIndex: 0),
       ),
     );
   }
-
 
   Future<int?> _getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -87,5 +88,4 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
 
     return AppointmentService.hasPendingAppointment(userId!);
   }
-
 }
