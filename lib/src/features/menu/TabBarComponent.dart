@@ -126,14 +126,49 @@ class _TabBarComponentState extends State<TabBarComponent> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.person,
+                    Icons.document_scanner,
                     color: selectedIndex == 2 ? Colors.red : Colors.grey,
+                    size: 24,
+                  ),
+                  Text(
+                    ' Exames',
+                    style: TextStyle(
+                      color: selectedIndex == 2 ? Colors.red : Colors.grey,
+                      height: 1.5,
+                      fontSize: 12,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedIndex = 2;
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PerfilScreen(),
+                  ),
+                );
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.person,
+                    color: selectedIndex == 3 ? Colors.red : Colors.grey,
                     size: 24,
                   ),
                   Text(
                     ' Perfil',
                     style: TextStyle(
-                      color: selectedIndex == 2 ? Colors.red : Colors.grey,
+                      color: selectedIndex == 3 ? Colors.red : Colors.grey,
                       height: 1.5,
                       fontSize: 12,
                       fontFamily: 'Inter',

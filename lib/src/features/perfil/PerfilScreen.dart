@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Doador/service/UserService.dart';
 import '../menu/TabBarComponent.dart';
+import 'EditarPerfilScreen.dart';
 
 class PerfilScreen extends StatefulWidget {
   @override
@@ -45,7 +46,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
             Navigator.of(context).pop();
           },
         ),
-        title: Text('Cartão de doador'),
+        title: Text('Perfil do Doador'),
         backgroundColor: Color(0xFFE24646),
         actions: [
           IconButton(
@@ -70,7 +71,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
               ),
             ),
           ),
-          // Continue adicionando os outros elementos do layout convertido...
 
           // Ellipse 6
           Positioned(
@@ -136,21 +136,41 @@ class _PerfilScreenState extends State<PerfilScreen> {
             ),
           ),
 
-          // Botão "Editar" abaixo do texto
-          Positioned(
-            left: 16,
-            right: 16,
-            top: 450, // Ajuste a posição conforme necessário
-            child: ElevatedButton(
-              onPressed: () {
-                // Implemente a ação para "Editar Perfil" aqui
-              },
-              child: Text('Editar Perfil'),
+      // ...
+
+// Botão "Editar" abaixo do texto
+      Positioned(
+        bottom: 16,
+        left: 16,
+        right: 16,
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => EditarPerfilScreen(),
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            primary: Color(0xFFD64545),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100),
             ),
           ),
+          child: Text(
+            'Editar Perfil',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
+
+    ),
         ],
       ),
-      bottomNavigationBar: TabBarComponent(initialSelectedIndex: 2),
+      bottomNavigationBar: TabBarComponent(initialSelectedIndex: 3),
     );
   }
 }
