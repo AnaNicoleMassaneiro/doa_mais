@@ -1,3 +1,4 @@
+import 'package:doa_mais/src/features/perfil/PerfilScreen.dart';
 import 'package:flutter/material.dart';
 import '../Doador/doadorCardPage.dart';
 import '../appointments/appointmentsPage.dart';
@@ -114,7 +115,12 @@ class _TabBarComponentState extends State<TabBarComponent> {
                 setState(() {
                   selectedIndex = 2;
                 });
-                // Implementar a navegação para a tela do perfil aqui
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PerfilScreen(),
+                  ),
+                );
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -125,7 +131,7 @@ class _TabBarComponentState extends State<TabBarComponent> {
                     size: 24,
                   ),
                   Text(
-                    'Perfil',
+                    ' Perfil',
                     style: TextStyle(
                       color: selectedIndex == 2 ? Colors.red : Colors.grey,
                       height: 1.5,
