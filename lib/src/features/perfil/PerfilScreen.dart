@@ -1,9 +1,11 @@
+import 'package:doa_mais/src/features/perfil/service/PerfilService.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Doador/service/UserService.dart';
 import '../menu/TabBarComponent.dart';
 import 'EditarPerfilScreen.dart';
+import 'Model/UserData.dart';
 
 class PerfilScreen extends StatefulWidget {
   @override
@@ -12,13 +14,18 @@ class PerfilScreen extends StatefulWidget {
 
 class _PerfilScreenState extends State<PerfilScreen> {
   final UserService _userService = UserService();
+  final PerfilService _perfilService = PerfilService();
+  bool isLoading = true;
+
   Map<String, dynamic>? userData;
+  UserData? userDataModel;
 
   @override
   void initState() {
     super.initState();
     fetchUserData();
     _getUserId();
+    fetchUserDataFromApi();
   }
 
   Future<int?> _getUserId() async {
@@ -35,6 +42,25 @@ class _PerfilScreenState extends State<PerfilScreen> {
       userData = data;
     });
   }
+
+  Future<void> fetchUserDataFromApi() async {
+    int? userId = await _getUserId();
+
+    try {
+      final data = await _perfilService.fetchUserData(userId!);
+      setState(() {
+        userDataModel = data;
+        isLoading = false; // Marca o carregamento como concluído
+      });
+    } catch (e) {
+      // Trate erros aqui, como exibir uma mensagem de erro para o usuário.
+      print('Erro ao buscar dados do usuário: $e');
+      setState(() {
+        isLoading = false; // Marca o carregamento como concluído, mesmo em caso de erro
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +85,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
       ),
       body: Stack(
         children: [
-          // Adicione aqui o layout convertido que você tinha, por exemplo:
           Positioned(
             height: 245,
             left: -1,
@@ -71,7 +96,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
               ),
             ),
           ),
-
+          if (isLoading)
+            Center(
+              child: CircularProgressIndicator(),
+            ),
           // Ellipse 6
           Positioned(
             width: 158,
@@ -110,8 +138,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
                   width: 272,
                   height: 36,
                   child: Text(
-                    'Victoria Robertson',
-                    style: TextStyle(
+                    userDataModel!.name,
+                    style: const TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
                       fontSize: 30,
@@ -122,8 +150,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 ),
                 Container(
                   child: Text(
-                    '3 doações! Parabéns você está salvando vidas',
-                    style: TextStyle(
+                    userDataModel!.cpf,
+                    style: const TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
@@ -135,10 +163,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
               ],
             ),
           ),
-
-      // ...
-
-// Botão "Editar" abaixo do texto
       Positioned(
         bottom: 16,
         left: 16,
@@ -157,7 +181,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               borderRadius: BorderRadius.circular(100),
             ),
           ),
-          child: Text(
+          child: const Text(
             'Editar Perfil',
             style: TextStyle(
               fontSize: 16,

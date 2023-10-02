@@ -1,5 +1,8 @@
+import 'package:doa_mais/src/features/perfil/service/PerfilService.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Doador/service/UserService.dart';
 import '../menu/TabBarComponent.dart';
 
 class EditarPerfilScreen extends StatefulWidget {
@@ -8,6 +11,112 @@ class EditarPerfilScreen extends StatefulWidget {
 }
 
 class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
+  final PerfilService _perfilService = PerfilService();
+  TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController cpfController = TextEditingController();
+  final UserService _userService = UserService();
+  Map<String, dynamic>? userData;
+
+  bool passwordsMatch = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserDataFromApi();
+  }
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    fetchUserData();
+    _getUserId();
+    super.dispose();
+  }
+
+  Future<void> fetchUserDataFromApi() async {
+    int? userId = await _getUserId();
+
+    try {
+      final userData = await _perfilService.fetchUserData(userId!);
+
+      // Preencha os controladores com os dados do usuário
+      cpfController.text = userData!.cpf;
+      nameController.text = userData.name;
+      emailController.text = userData.email;
+    } catch (e) {
+      // Trate erros aqui, como exibir uma mensagem de erro para o usuário.
+      print('Erro ao buscar dados do usuário da API: $e');
+    }
+  }
+
+
+  Future<int?> _getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? userId = prefs.getInt('userId');
+    return userId;
+  }
+
+  Future<void> fetchUserData() async {
+    int? userId = await _getUserId();
+
+    final data = await _userService.fetchUserData(userId!);
+    setState(() {
+      userData = data;
+    });
+  }
+
+
+  Future<void> updateUserProfile() async {
+    if (passwordController.text != confirmPasswordController.text) {
+      setState(() {
+        passwordsMatch = false;
+        _showModal('Erro', 'Senhas não coincidem', Colors.white);
+      });
+      return;
+    }
+
+    final updatedUserData = {
+      "cpf": cpfController.text,
+      "email": emailController.text,
+      "id": 1,
+      "name": nameController.text,
+      "password": passwordController.text,
+    };
+
+    final success = await _perfilService.updateUserData(1, updatedUserData);
+
+    if (success) {
+      _showModal('Sucesso', 'Perfil atualizado com sucesso', Colors.white);
+    } else {
+      _showModal('Erro', 'Falha ao atualizar o perfil do usuário', Colors.red);
+    }
+  }
+
+  void _showModal(String title, String message, Color color) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          backgroundColor: color,
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,8 +194,9 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                   children: [
                     Expanded(
                       child: TextField(
+                        controller: nameController,
                         decoration: InputDecoration(
-                          labelText: 'Name',
+                          labelText: 'Nome',
                           labelStyle: TextStyle(
                             fontSize: 16,
                             color: Color(0xFFBDBDBD),
@@ -100,6 +210,8 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
               ),
             ),
           ),
+
+
 
           // Email Input
           Positioned(
@@ -119,6 +231,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                   children: [
                     Expanded(
                       child: TextField(
+                        controller: emailController,
                         decoration: InputDecoration(
                           labelText: 'Email',
                           labelStyle: TextStyle(
@@ -135,9 +248,44 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
             ),
           ),
 
-          // Password Input
+          // cpf Input
           Positioned(
             top: 370,
+            left: 17,
+            right: 15,
+            height: 50,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Color(0xFFF6F6F6),
+                border: Border.all(color: Color(0xFFE8E8E8)),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: cpfController,
+                        decoration: InputDecoration(
+                          labelText: 'CPF',
+                          labelStyle: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFFBDBDBD),
+                          ),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Password Input
+          Positioned(
+            top: 430,
             left: 17,
             right: 15,
             height: 50,
@@ -148,6 +296,8 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                 children: [
                   Expanded(
                     child: TextField(
+                      controller: passwordController,
+                      obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Senha',
                         labelStyle: TextStyle(
@@ -176,7 +326,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
           ),
 
           Positioned(
-            top: 430, // Altura para posicionar abaixo do campo de senha
+            top: 490, // Altura para posicionar abaixo do campo de senha
             left: 17,
             right: 15,
             height: 50,
@@ -185,6 +335,15 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                 color: Color(0xFFF6F6F6),
                 border: Border.all(color: Color(0xFFE8E8E8)),
                 borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  // Adicione uma sombra vermelha se as senhas não coincidirem
+                  if (!passwordsMatch)
+                    BoxShadow(
+                      color: Colors.red,
+                      blurRadius: 4,
+                      spreadRadius: 1,
+                    ),
+                ],
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -192,6 +351,8 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                   children: [
                     Expanded(
                       child: TextField(
+                        controller: confirmPasswordController,
+                        obscureText: true,
                         decoration: InputDecoration(
                           labelText: 'Confirmar Senha',
                           labelStyle: TextStyle(
@@ -211,12 +372,10 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
           Positioned(
             left: 17,
             right: 15,
-            top: 500, // Altura para posicionar abaixo do campo de confirmar senha
+            top: 580,
             height: 51,
             child: ElevatedButton(
-              onPressed: () {
-                // Implementar ação para salvar as alterações do perfil
-              },
+              onPressed: updateUserProfile,
               style: ElevatedButton.styleFrom(
                 primary: Color(0xFFD64545),
                 shape: RoundedRectangleBorder(

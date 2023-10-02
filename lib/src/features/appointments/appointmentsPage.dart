@@ -63,7 +63,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                     ),
                   ),
                   // Adjusted the height of the card using Expanded widget
-                  AppointmentCard(),
                 ],
               );
             }
