@@ -2,6 +2,7 @@ import 'package:doa_mais/src/features/perfil/PerfilScreen.dart';
 import 'package:flutter/material.dart';
 import '../Doador/doadorCardPage.dart';
 import '../appointments/appointmentsPage.dart';
+import '../appointments/components/appointment_card.dart';
 
 class TabBarComponent extends StatefulWidget {
   final int initialSelectedIndex;
@@ -118,7 +119,7 @@ class _TabBarComponentState extends State<TabBarComponent> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PerfilScreen(),
+                    builder: (context) => AppointmentCard(),
                   ),
                 );
               },
