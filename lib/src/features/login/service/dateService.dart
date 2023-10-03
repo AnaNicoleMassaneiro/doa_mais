@@ -9,16 +9,21 @@ class DateService {
       final jsonData = json.decode(response.body);
 
       if (jsonData is List<dynamic> && jsonData.isNotEmpty) {
-        final firstItem = jsonData[0];
-        final availableDates = firstItem['availableDates'];
+        List<DateTime> dates = [];
 
-        if (availableDates is List<dynamic> && availableDates.isNotEmpty) {
-          List<DateTime> dates = [];
-          for (var dateData in availableDates) {
-            // Assuming that the dates are stored as strings in the format 'YYYY-MM-DD'
-            DateTime date = DateTime.parse(dateData['date']);
-            dates.add(date);
+        for (var item in jsonData) {
+          final availableDates = item['availableDates'];
+
+          if (availableDates is List<dynamic> && availableDates.isNotEmpty) {
+            for (var dateData in availableDates) {
+              // Assuming that the dates are stored as strings in the format 'YYYY-MM-DD'
+              DateTime date = DateTime.parse(dateData['date']);
+              dates.add(date);
+            }
           }
+        }
+
+        if (dates.isNotEmpty) {
           return dates;
         }
       }
@@ -36,22 +41,27 @@ class DateService {
       final jsonData = json.decode(response.body);
 
       if (jsonData is List<dynamic> && jsonData.isNotEmpty) {
-        final firstItem = jsonData[0];
-        final availableDates = firstItem['availableDates'];
+        List<String> timeSlots = [];
 
-        if (availableDates is List<dynamic>) {
-          for (var dateData in availableDates) {
-            if (dateData['date'] == selectedDate) {
-              final availableTimeSlots = dateData['availableTimeSlots'];
-              if (availableTimeSlots is List<dynamic>) {
-                List<String> timeSlots = [];
-                for (var timeSlotData in availableTimeSlots) {
-                  timeSlots.add(timeSlotData['time']);
+        for (var item in jsonData) {
+          final availableDates = item['availableDates'];
+
+          if (availableDates is List<dynamic>) {
+            for (var dateData in availableDates) {
+              if (dateData['date'] == selectedDate) {
+                final availableTimeSlots = dateData['availableTimeSlots'];
+                if (availableTimeSlots is List<dynamic>) {
+                  for (var timeSlotData in availableTimeSlots) {
+                    timeSlots.add(timeSlotData['time']);
+                  }
                 }
-                return timeSlots;
               }
             }
           }
+        }
+
+        if (timeSlots.isNotEmpty) {
+          return timeSlots;
         }
       }
 
@@ -60,5 +70,6 @@ class DateService {
       throw Exception('Failed to fetch available time slots for date');
     }
   }
+
 
 }

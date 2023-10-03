@@ -264,8 +264,6 @@
 
           if (location.id != null) {
             // Use the LocationService to fetch the Hemobanco by name
-            HemobancoAddress locationDetails =
-                await LocationService.fetchLocationByName(location.id!);
 
             setState(() {
               selectedHemobancoId = location.id;
