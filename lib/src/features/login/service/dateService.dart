@@ -3,19 +3,18 @@ import 'package:http/http.dart' as http;
 
 class DateService {
   static Future<List<DateTime>> fetchAvailableDatesForLocation(int hemobancoId) async {
-    final response = await http.get(Uri.parse('http://localhost:8080/hemobanco_dates/$hemobancoId'));
+    final response = await http.get(Uri.parse('http://localhost:8080/hemobanco_dates/hemobanco/$hemobancoId'));
 
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
 
-      // Check if jsonData is a map and contains the 'availableDates' key
-      if (jsonData is Map<String, dynamic> && jsonData.containsKey('availableDates')) {
-        var datesList = jsonData['availableDates'];
+      if (jsonData is List<dynamic> && jsonData.isNotEmpty) {
+        final firstItem = jsonData[0];
+        final availableDates = firstItem['availableDates'];
 
-        // If datesList is a list, process the dates
-        if (datesList is List) {
+        if (availableDates is List<dynamic> && availableDates.isNotEmpty) {
           List<DateTime> dates = [];
-          for (var dateData in datesList) {
+          for (var dateData in availableDates) {
             // Assuming that the dates are stored as strings in the format 'YYYY-MM-DD'
             DateTime date = DateTime.parse(dateData['date']);
             dates.add(date);
@@ -31,24 +30,26 @@ class DateService {
   }
 
   static Future<List<String>> fetchAvailableTimeSlotsForDate(int hemobancoId, String selectedDate) async {
-    final response = await http.get(Uri.parse('http://localhost:8080/hemobanco_dates/$hemobancoId'));
+    final response = await http.get(Uri.parse('http://localhost:8080/hemobanco_dates/hemobanco/$hemobancoId'));
 
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
 
-      // Check if jsonData is a map and contains the 'availableDates' key
-      if (jsonData is Map<String, dynamic> && jsonData.containsKey('availableDates')) {
-        var datesList = jsonData['availableDates'];
+      if (jsonData is List<dynamic> && jsonData.isNotEmpty) {
+        final firstItem = jsonData[0];
+        final availableDates = firstItem['availableDates'];
 
-        // If datesList is a list, find the selected date and extract its time slots
-        if (datesList is List) {
-          for (var dateData in datesList) {
+        if (availableDates is List<dynamic>) {
+          for (var dateData in availableDates) {
             if (dateData['date'] == selectedDate) {
-              List<String> timeSlots = [];
-              for (var timeSlotData in dateData['availableTimeSlots']) {
-                timeSlots.add(timeSlotData['time']);
+              final availableTimeSlots = dateData['availableTimeSlots'];
+              if (availableTimeSlots is List<dynamic>) {
+                List<String> timeSlots = [];
+                for (var timeSlotData in availableTimeSlots) {
+                  timeSlots.add(timeSlotData['time']);
+                }
+                return timeSlots;
               }
-              return timeSlots;
             }
           }
         }
@@ -59,4 +60,5 @@ class DateService {
       throw Exception('Failed to fetch available time slots for date');
     }
   }
+
 }

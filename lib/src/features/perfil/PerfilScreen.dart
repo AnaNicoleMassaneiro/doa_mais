@@ -130,7 +130,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
             width: 272,
             height: 82,
             left: 52,
-            top: 302,
+            top: 250,
             child: Column(
               children: [
                 // Victoria Robertson
