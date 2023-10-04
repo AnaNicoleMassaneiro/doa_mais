@@ -2,7 +2,7 @@ import 'package:doa_mais/src/features/perfil/service/PerfilService.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Doador/service/UserService.dart';
+import './service/UserService.dart';
 import '../menu/TabBarComponent.dart';
 
 class EditarPerfilScreen extends StatefulWidget {
@@ -65,7 +65,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
 
     final data = await _userService.fetchUserData(userId!);
     setState(() {
-      userData = data;
+      userData = data as Map<String, dynamic>?;
     });
   }
 

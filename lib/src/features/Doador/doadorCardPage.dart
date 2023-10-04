@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../menu/TabBarComponent.dart';
 import 'FullscreenDoadorCardScreen.dart';
+import 'model/UserDataCard.dart';
 
 class DoadorCardScreen extends StatefulWidget {
   @override
@@ -11,7 +12,7 @@ class DoadorCardScreen extends StatefulWidget {
 
 class _DoadorCardScreenState extends State<DoadorCardScreen> {
   final UserService _userService = UserService();
-  Map<String, dynamic>? userData;
+  late final UserDataCard? userData;
 
   @override
   void initState() {
@@ -31,7 +32,7 @@ class _DoadorCardScreenState extends State<DoadorCardScreen> {
 
     final data = await _userService.fetchUserData(userId!);
     setState(() {
-      userData = data;
+      userData = data as UserDataCard?;
     });
   }
 
@@ -48,76 +49,87 @@ class _DoadorCardScreenState extends State<DoadorCardScreen> {
         title: Text('Cartão de doador'),
         backgroundColor: Color(0xFFE24646),
       ),
-      body: Container(
-        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-        child: GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FullscreenDoadorCardScreen(),
-              ),
-            );
-          },
-          child: Container(
-            padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 20),
-            width: 400,
-            height: 250,
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: userData != null
-                  ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 20),
-                  Text(
-                    'Nome: ${userData!['userId']}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(20),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FullscreenDoadorCardScreen(userData: userData!),
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Tipo Sanguíneo: ${userData!['bloodType']}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'CPF: ${userData!['cpf']}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Validade: ${userData!['validity']}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              )
-                  : Text(
-                'Loading user data...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
+                );
+              },
+              child: Container(
+                width: 400,
+                height: 250,
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: userData != null
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 20),
+                            Text(
+                              'Nome: ${userData!.user.name}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Tipo Sanguíneo: ${userData!.bloodType}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'CPF: ${userData!.user.cpf}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Validade: ${userData!.validity}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Número do cartão: ${userData!.cardNumber}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          'Carregando dados do usuário...',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
               ),
             ),
           ),
-        ),
+        ],
       ),
       bottomNavigationBar: TabBarComponent(initialSelectedIndex: 1),
     );
