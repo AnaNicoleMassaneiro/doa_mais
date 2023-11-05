@@ -1,8 +1,13 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' as io;
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../menu/TabBarComponent.dart';
 
@@ -30,6 +35,16 @@ class _AppointmentCardState extends State<AppointmentCard> {
       });
     } else {
       throw Exception('Failed to load appointment data');
+    }
+  }
+
+  void downloadAndOpenPdf(int appId) async {
+    String pdfUrl = 'http://localhost:8080/appointments/$appId/download-pdf'; // Substitua pela URL real do seu PDF
+
+    if (await canLaunch(pdfUrl)) {
+      await launch(pdfUrl);
+    } else {
+      throw 'Could not launch $pdfUrl';
     }
   }
 
@@ -132,9 +147,12 @@ class _AppointmentCardState extends State<AppointmentCard> {
                                     ),
                                     borderRadius: BorderRadius.circular(100),
                                   ),
-                                  child: Center(
+                                  child: ElevatedButton( // Use ElevatedButton para criar um botão elevado
+                                    onPressed: () {
+                                      downloadAndOpenPdf(appointmentDataList[0]['id']);
+                                    },
                                     child: Text(
-                                      'Ver Exames!',
+                                      'Baixar Exames!',
                                       style: TextStyle(
                                         fontFamily: 'Inter',
                                         fontWeight: FontWeight.w600,
@@ -143,7 +161,8 @@ class _AppointmentCardState extends State<AppointmentCard> {
                                       ),
                                     ),
                                   ),
-                                ),
+                                )
+
                               ],
                             ),
                           ),

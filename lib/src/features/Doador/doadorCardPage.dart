@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../menu/TabBarComponent.dart';
 import 'FullscreenDoadorCardScreen.dart';
 import 'model/UserDataCard.dart';
+import 'package:intl/intl.dart';
 
 class DoadorCardScreen extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class DoadorCardScreen extends StatefulWidget {
 class _DoadorCardScreenState extends State<DoadorCardScreen> {
   final UserService _userService = UserService();
   late final UserDataCard? userData;
+  bool isLoading = true; // Adicione uma variável para controlar o indicador de carregamento
 
   @override
   void initState() {
@@ -33,6 +35,7 @@ class _DoadorCardScreenState extends State<DoadorCardScreen> {
     final data = await _userService.fetchUserData(userId!);
     setState(() {
       userData = data as UserDataCard?;
+      isLoading = false; // Define isLoading como falso após o carregamento dos dados
     });
   }
 
@@ -71,11 +74,14 @@ class _DoadorCardScreenState extends State<DoadorCardScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Stack(
-                  // Adiciona uma pilha para colocar a imagem em cima do container
                   children: [
                     Padding(
                       padding: EdgeInsets.all(20),
-                      child: userData != null
+                      child: isLoading
+                          ? Center(
+                        child: CircularProgressIndicator(), // Indicador de carregamento
+                      )
+                          : userData != null
                           ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -106,7 +112,7 @@ class _DoadorCardScreenState extends State<DoadorCardScreen> {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            'Validade: ${userData!.validity}',
+                            'Validade: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(userData!.validity))}',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.white,
@@ -131,12 +137,12 @@ class _DoadorCardScreenState extends State<DoadorCardScreen> {
                       ),
                     ),
                     Positioned(
-                      top: 0, // Ajuste a posição vertical conforme necessário
-                      right: 0, // Ajuste a posição horizontal conforme necessário
+                      top: 0,
+                      right: 0,
                       child: Image.asset(
-                        'gota_de_sangue.png', // Substitua pelo caminho da sua imagem
-                        width: 150, // Ajuste o tamanho conforme necessário
-                        height: 250, // Ajuste o tamanho conforme necessário
+                        'gota_de_sangue.png',
+                        width: 150,
+                        height: 250,
                       ),
                     ),
                   ],
