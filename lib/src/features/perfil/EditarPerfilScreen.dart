@@ -17,8 +17,10 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController cpfController = TextEditingController();
+
   final UserService _userService = UserService();
   Map<String, dynamic>? userData;
+  int? userId = null;
 
   bool passwordsMatch = true;
 
@@ -38,7 +40,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
   }
 
   Future<void> fetchUserDataFromApi() async {
-    int? userId = await _getUserId();
+    userId = await _getUserId();
 
     try {
       final userData = await _perfilService.fetchUserData(userId!);
@@ -52,7 +54,6 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
       print('Erro ao buscar dados do usuário da API: $e');
     }
   }
-
 
   Future<int?> _getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -69,7 +70,6 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
     });
   }
 
-
   Future<void> updateUserProfile() async {
     if (passwordController.text != confirmPasswordController.text) {
       setState(() {
@@ -82,7 +82,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
     final updatedUserData = {
       "cpf": cpfController.text,
       "email": emailController.text,
-      "id": 1,
+      "id": userId,
       "name": nameController.text,
       "password": passwordController.text,
     };
@@ -130,285 +130,20 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
         title: Text('Editar Perfil do Doador'),
         backgroundColor: Color(0xFFE24646),
       ),
-      body: Stack(
-        children: [
-          // Phone Frame
-          Positioned(
-            top: -22,
-            left: -22,
-            child: Container(
-              width: 419,
-              height: 856,
-              color: Colors.grey,
-            ),
-          ),
-
-          // Silhouette
-          Positioned(
-            top: -22,
-            left: -22,
-            child: Container(
-              width: 419,
-              height: 856,
-              color: Colors.white,
-            ),
-          ),
-
-          // Notch
-          Positioned(
-            bottom: 8,
-            left: MediaQuery.of(context).size.width / 2 - 135 / 2,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(100),
-              child: Container(
-                width: 135,
-                height: 5,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 44,
-            child: Container(
-              color: Colors.white,
-            ),
-          ),
-          // Name Input
-          Positioned(
-            top: 250,
-            left: 17,
-            right: 15,
-            height: 50,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Color(0xFFF6F6F6),
-                border: Border.all(color: Color(0xFFE8E8E8)),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: nameController,
-                        decoration: InputDecoration(
-                          labelText: 'Nome',
-                          labelStyle: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFFBDBDBD),
-                          ),
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-
-
-          // Email Input
-          Positioned(
-            top: 310,
-            left: 17,
-            right: 15,
-            height: 50,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Color(0xFFF6F6F6),
-                border: Border.all(color: Color(0xFFE8E8E8)),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: emailController,
-                        decoration: InputDecoration(
-                          labelText: 'Email',
-                          labelStyle: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFFBDBDBD),
-                          ),
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // cpf Input
-          Positioned(
-            top: 370,
-            left: 17,
-            right: 15,
-            height: 50,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Color(0xFFF6F6F6),
-                border: Border.all(color: Color(0xFFE8E8E8)),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: cpfController,
-                        decoration: InputDecoration(
-                          labelText: 'CPF',
-                          labelStyle: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFFBDBDBD),
-                          ),
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Password Input
-          Positioned(
-            top: 430,
-            left: 17,
-            right: 15,
-            height: 50,
-            child: Container(
-              color: Color(0xFFF6F6F6),
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Senha',
-                        labelStyle: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFFBDBDBD),
-                        ),
-                        border: InputBorder.none,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      // Implementar ação para mostrar/esconder a senha
-                    },
-                    child: Text(
-                      'Mostrar',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFFD64545),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          Positioned(
-            top: 490, // Altura para posicionar abaixo do campo de senha
-            left: 17,
-            right: 15,
-            height: 50,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Color(0xFFF6F6F6),
-                border: Border.all(color: Color(0xFFE8E8E8)),
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  // Adicione uma sombra vermelha se as senhas não coincidirem
-                  if (!passwordsMatch)
-                    BoxShadow(
-                      color: Colors.red,
-                      blurRadius: 4,
-                      spreadRadius: 1,
-                    ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: confirmPasswordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'Confirmar Senha',
-                          labelStyle: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFFBDBDBD),
-                          ),
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          Positioned(
-            left: 17,
-            right: 15,
-            top: 580,
-            height: 51,
-            child: ElevatedButton(
-              onPressed: updateUserProfile,
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xFFD64545),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(100),
-                ),
-              ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Center(
               child: Text(
-                'Salvar',
+                'Trocar Foto',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: Color(0xFFD64545),
                 ),
               ),
             ),
-          ),
-
-          Positioned(
-            left: MediaQuery.of(context).size.width / 2 - 89 / 2,
-            top: 190,
-            child: Text(
-              'Trocar Foto',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFFD64545),
-              ),
-            ),
-          ),
-          Positioned(
-            left: MediaQuery.of(context).size.width / 2 - 158 / 2 - 0.5,
-            top: 20,
-            child: Container(
+            Container(
               width: 158,
               height: 158,
               decoration: BoxDecoration(
@@ -429,8 +164,196 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                 ),
               ),
             ),
-          ),
-        ],
+            // Name Input
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Color(0xFFF6F6F6),
+                  border: Border.all(color: Color(0xFFE8E8E8)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: nameController,
+                          decoration: InputDecoration(
+                            labelText: 'Nome',
+                            labelStyle: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFFBDBDBD),
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // Email Input
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Color(0xFFF6F6F6),
+                  border: Border.all(color: Color(0xFFE8E8E8)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: emailController,
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            labelStyle: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFFBDBDBD),
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // CPF Input
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Color(0xFFF6F6F6),
+                  border: Border.all(color: Color(0xFFE8E8E8)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: cpfController,
+                          decoration: InputDecoration(
+                            labelText: 'CPF',
+                            labelStyle: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFFBDBDBD),
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // Password Input
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                color: Color(0xFFF6F6F6),
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: 'Senha',
+                          labelStyle: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFFBDBDBD),
+                          ),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        // Implementar ação para mostrar/esconder a senha
+                      },
+                      child: Text(
+                        'Mostrar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFFD64545),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Color(0xFFF6F6F6),
+                  border: Border.all(color: Color(0xFFE8E8E8)),
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    // Adicione uma sombra vermelha se as senhas não coincidirem
+                    if (!passwordsMatch)
+                      BoxShadow(
+                        color: Colors.red,
+                        blurRadius: 4,
+                        spreadRadius: 1,
+                      ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: confirmPasswordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            labelText: 'Confirmar Senha',
+                            labelStyle: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFFBDBDBD),
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: updateUserProfile,
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xFFD64545),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(100),
+                ),
+              ),
+              child: Text(
+                'Salvar',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: TabBarComponent(initialSelectedIndex: 3),
     );

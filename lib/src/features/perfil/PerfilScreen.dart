@@ -61,7 +61,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,36 +82,28 @@ class _PerfilScreenState extends State<PerfilScreen> {
           ),
         ],
       ),
-      body: Stack(
+      body: isLoading
+          ? Center(
+        child: CircularProgressIndicator(),
+      )
+          : Stack(
         children: [
-          Positioned(
+          Container(
+            color: Color(0xFFD64545), // Cor de fundo vermelha
             height: 245,
-            left: -1,
-            right: 0,
-            top: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xFFD64545), // red
-              ),
-            ),
           ),
-          if (isLoading)
-            Center(
-              child: CircularProgressIndicator(),
-            ),
-          // Ellipse 6
           Positioned(
             width: 158,
             height: 158,
             left: MediaQuery.of(context).size.width / 2 - 158 / 2 - 0.5,
-            top: 128,
+            top: 50, // Ajuste a posição vertical da foto na parte vermelha
             child: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/your_image.png'), // Substitua pelo caminho da sua imagem
                 ),
                 border: Border.all(
-                  color: Colors.white, // White
+                  color: Colors.white,
                   width: 4,
                 ),
                 borderRadius: BorderRadius.circular(79),
@@ -126,72 +117,65 @@ class _PerfilScreenState extends State<PerfilScreen> {
               ),
             ),
           ),
-          Positioned(
-            width: 272,
-            height: 82,
-            left: 52,
-            top: 250,
-            child: Column(
-              children: [
-                // Victoria Robertson
-                Container(
-                  width: 272,
-                  height: 36,
-                  child: Text(
-                    userDataModel!.name,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 30,
-                      color: Colors.black, // Black
+          Center(
+            child: Container(
+              margin: EdgeInsets.only(top: 245), // Margem para a parte branca
+              color: Colors.white, // Cor de fundo branca
+              child: Column(
+                children: [
+                  Container(
+                    width: 272,
+                    height: 36,
+                    child: Text(
+                      userDataModel!.name,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 30,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                ),
-                Container(
-                  child: Text(
-                    userDataModel!.cpf,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Colors.black, // Black
+                  Container(
+                    child: Text(
+                      userDataModel!.cpf,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                ),
-              ],
-            ),
-          ),
-      Positioned(
-        bottom: 16,
-        left: 16,
-        right: 16,
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => EditarPerfilScreen(),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EditarPerfilScreen(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xFFD64545), // Cor vermelha para o botão
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                    ),
+                    child: const Text(
+                      'Editar Perfil',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            primary: Color(0xFFD64545),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100),
             ),
           ),
-          child: const Text(
-            'Editar Perfil',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-        ),
-
-    ),
         ],
       ),
       bottomNavigationBar: TabBarComponent(initialSelectedIndex: 3),
