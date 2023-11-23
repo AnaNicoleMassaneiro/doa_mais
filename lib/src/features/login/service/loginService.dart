@@ -5,7 +5,7 @@ import 'dart:convert';
 import '../User.dart';
 
 class LoginService {
-  Future<User> login(String email, String password) async {
+  Future<User?> login(String email, String password) async {
     final url = 'http://localhost:8080/login';
     final body = jsonEncode({
       'email': email,
@@ -21,8 +21,7 @@ class LoginService {
         Map<String, dynamic> userData = jsonDecode(response.body);
         return User.fromJson(userData);
       } else {
-        // Login failed
-        throw Exception('Login failed');
+        return null;
       }
     } catch (error) {
       // Error during API call

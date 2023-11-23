@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../Model/UserData.dart';
+import 'dart:io';
 
 class PerfilService {
   final String baseUrl = 'http://localhost:8080/users';
@@ -20,24 +21,29 @@ class PerfilService {
   }
 
   Future<bool> updateUserData(int userId, Map<String, dynamic> updatedUserData) async {
-    final apiUrl = '$baseUrl/$userId';
-
     try {
       final response = await http.put(
-        Uri.parse(apiUrl),
-        body: json.encode(updatedUserData),
-        headers: {'Content-Type': 'application/json'},
+        Uri.parse('http://localhost:8080/users/$userId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json', // Ensure the content type is set to JSON
+        },
+        body: jsonEncode(updatedUserData),
       );
 
       if (response.statusCode == 200) {
-        return true; // Atualização bem-sucedida
+        // Handle the successful update here
+        return true;
       } else {
-        return false; // Falha na atualização
+        // Handle other status codes or errors
+        return false;
       }
     } catch (e) {
-      return false; // Erro durante a chamada PUT
+      // Handle exceptions
+      print('Error updating profile: $e');
+      return false;
     }
   }
+
 
 
 }

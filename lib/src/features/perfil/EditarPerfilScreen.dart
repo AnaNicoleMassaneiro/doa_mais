@@ -1,9 +1,15 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+
 import 'package:doa_mais/src/features/perfil/service/PerfilService.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
 
 import './service/UserService.dart';
 import '../menu/TabBarComponent.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class EditarPerfilScreen extends StatefulWidget {
   @override
@@ -17,6 +23,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController cpfController = TextEditingController();
+  File? _imageFile;
 
   final UserService _userService = UserService();
   Map<String, dynamic>? userData;
@@ -70,6 +77,29 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
     });
   }
 
+  Future<void> _pickImage() async {
+    final status = await Permission.photos.request();
+
+    if (status.isGranted) {
+      try {
+        final imageFile = await ImagePicker().getImage(source: ImageSource.gallery);
+        if (imageFile != null) {
+          // If permission is granted and an image is selected, continue.
+          setState(() {
+            _imageFile = File(imageFile.path);
+          });
+        } else {
+          // Logic to handle the absence of a selected image.
+        }
+      } catch (e) {
+        // Handle errors related to image picking.
+        print('Error picking image: $e');
+      }
+    } else {
+      // Logic to handle denied permission.
+    }
+  }
+
   Future<void> updateUserProfile() async {
     if (passwordController.text != confirmPasswordController.text) {
       setState(() {
@@ -87,12 +117,36 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
       "password": passwordController.text,
     };
 
-    final success = await _perfilService.updateUserData(1, updatedUserData);
+    final success = await _perfilService.updateUserData(userId!, updatedUserData);
 
     if (success) {
       _showModal('Sucesso', 'Perfil atualizado com sucesso', Colors.white);
     } else {
       _showModal('Erro', 'Falha ao atualizar o perfil do usuário', Colors.red);
+    }
+  }
+
+  Future<bool> updateUserData(int userId, Map<String, dynamic> updatedUserData) async {
+    try {
+      final response = await http.put(
+        Uri.parse('http://localhost:8080/users/$userId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json', // Ensure the content type is set to JSON
+        },
+        body: jsonEncode(updatedUserData),
+      );
+
+      if (response.statusCode == 200) {
+        // Handle the successful update here
+        return true;
+      } else {
+        // Handle other status codes or errors
+        return false;
+      }
+    } catch (e) {
+      // Handle exceptions
+      print('Error updating profile: $e');
+      return false;
     }
   }
 
@@ -133,38 +187,6 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Center(
-              child: Text(
-                'Trocar Foto',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFFD64545),
-                ),
-              ),
-            ),
-            Container(
-              width: 158,
-              height: 158,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white,
-                  width: 4,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.fromRGBO(101, 101, 101, 0.15),
-                    blurRadius: 20,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-                image: DecorationImage(
-                  image: AssetImage('assets/your_image.png'), // Substitua pelo caminho da sua imagem
-                ),
-              ),
-            ),
-            // Name Input
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: DecoratedBox(

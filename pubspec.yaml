@@ -40,6 +40,8 @@ dependencies:
   open_file: ^3.2.1
   path_provider: ^2.0.5
   url_launcher: ^6.0.13
+  image_picker: ^0.8.4+2
+  permission_handler: ^11.0.1
 
 dev_dependencies:
   flutter_test:

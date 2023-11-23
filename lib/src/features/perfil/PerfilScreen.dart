@@ -28,6 +28,16 @@ class _PerfilScreenState extends State<PerfilScreen> {
     fetchUserDataFromApi();
   }
 
+  Future<void> _logout() async {
+    // Clear user data from SharedPreferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('userId'); // Remove the user ID or any other data you stored during login
+
+    // Navigate to the login screen or any other screen you want after logout
+    Navigator.pushReplacementNamed(context, '/login'); // Replace with your login screen route
+  }
+
+
   Future<int?> _getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userId = prefs.getInt('userId');
@@ -77,9 +87,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
           IconButton(
             icon: Icon(Icons.exit_to_app),
             onPressed: () {
-              // Implemente a ação para "Logout" aqui
+              _logout();
             },
           ),
+
         ],
       ),
       body: isLoading
@@ -100,7 +111,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
             child: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/your_image.png'), // Substitua pelo caminho da sua imagem
+                  image: AssetImage('assets/your_image.jpeg'), // Substitua pelo caminho da sua imagem
                 ),
                 border: Border.all(
                   color: Colors.white,

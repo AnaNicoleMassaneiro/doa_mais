@@ -44,8 +44,8 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error'),
-            content: Text('Invalid email or password.'),
+            title: Text('Erro'),
+            content: Text('Email ou senha inválidos.'),
             actions: [
               TextButton(
                 onPressed: () {
